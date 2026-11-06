@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Media.Imaging;
 using MusicPlayer.Nucleo;
@@ -13,6 +14,8 @@ namespace MusicPlayer;
 
 public sealed partial class JanelaPrincipal
 {
+    private const string UrlCodigoFonte = "https://github.com/filipefk/MusicPlayer";
+
     private async void abbSobre_Click(object sender, RoutedEventArgs e) => await MostrarSobreAsync();
 
     private async Task MostrarSobreAsync()
@@ -30,7 +33,8 @@ public sealed partial class JanelaPrincipal
             ("Windows", Environment.OSVersion.Version.ToString()),
             (Textos.Obter("SobreFormatos"), string.Join(' ', FormatosAudio.Extensoes)),
             (Textos.Obter("SobreInstaladoEm"), Path.TrimEndingDirectorySeparator(AppContext.BaseDirectory)),
-            (Textos.Obter("SobreDados"), PastasAplicativo.Dados)
+            (Textos.Obter("SobreDados"), PastasAplicativo.Dados),
+            (Textos.Obter("SobreCodigoFonte"), UrlCodigoFonte)
         };
 
         var conteudo = new StackPanel { Spacing = 16 };
@@ -72,10 +76,19 @@ public sealed partial class JanelaPrincipal
 
             var valor = new TextBlock
             {
-                Text = informacoes[i].Valor,
                 TextWrapping = TextWrapping.Wrap,
                 IsTextSelectionEnabled = true
             };
+            if (informacoes[i].Valor == UrlCodigoFonte)
+            {
+                var link = new Hyperlink { NavigateUri = new Uri(UrlCodigoFonte) };
+                link.Inlines.Add(new Run { Text = UrlCodigoFonte });
+                valor.Inlines.Add(link);
+            }
+            else
+            {
+                valor.Text = informacoes[i].Valor;
+            }
             Grid.SetRow(valor, i);
             Grid.SetColumn(valor, 1);
             grade.Children.Add(valor);

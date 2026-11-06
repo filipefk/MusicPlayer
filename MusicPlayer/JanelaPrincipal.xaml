@@ -38,6 +38,12 @@
             DefaultLabelPosition="Right"
             IsDynamicOverflowEnabled="False"
             OverflowButtonVisibility="Collapsed">
+            <AppBarToggleButton x:Name="abbPainelTocando" IsChecked="True" Click="abbPainelTocando_Click">
+                <AppBarToggleButton.Icon>
+                    <FontIcon Glyph="&#xE8A0;" />
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <AppBarSeparator />
             <AppBarButton x:Name="abbAdicionarArquivos" Click="abbAdicionarArquivos_Click">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE8E5;" />
@@ -62,11 +68,6 @@
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarSeparator />
-            <AppBarToggleButton x:Name="abbPainelTocando" IsChecked="True" Click="abbPainelTocando_Click">
-                <AppBarToggleButton.Icon>
-                    <FontIcon Glyph="&#xE8A0;" />
-                </AppBarToggleButton.Icon>
-            </AppBarToggleButton>
             <AppBarButton x:Name="abbIdioma">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE774;" />

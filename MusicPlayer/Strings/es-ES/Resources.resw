@@ -142,6 +142,9 @@
   <data name="SobreDados" xml:space="preserve">
     <value>Datos del usuario</value>
   </data>
+  <data name="SobreCodigoFonte" xml:space="preserve">
+    <value>Código fuente</value>
+  </data>
   <data name="SobreDesconhecida" xml:space="preserve">
     <value>desconocida</value>
   </data>
