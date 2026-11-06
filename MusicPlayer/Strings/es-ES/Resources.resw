@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Ok" xml:space="preserve">
+    <value>Aceptar</value>
+  </data>
+  <data name="AdicionarArquivos" xml:space="preserve">
+    <value>Agregar archivos</value>
+  </data>
+  <data name="AdicionarArquivosDica" xml:space="preserve">
+    <value>Agregar canciones al final de la cola (Ctrl+O)</value>
+  </data>
+  <data name="AdicionarPasta" xml:space="preserve">
+    <value>Agregar carpeta</value>
+  </data>
+  <data name="AdicionarPastaDica" xml:space="preserve">
+    <value>Agregar todas las canciones de una carpeta y sus subcarpetas</value>
+  </data>
+  <data name="LimparFila" xml:space="preserve">
+    <value>Vaciar cola</value>
+  </data>
+  <data name="LimparFilaDica" xml:space="preserve">
+    <value>Detener y quitar todas las canciones de la cola</value>
+  </data>
+  <data name="Idioma" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="IdiomaDica" xml:space="preserve">
+    <value>Idioma de la interfaz</value>
+  </data>
+  <data name="IdiomaWindows" xml:space="preserve">
+    <value>Idioma de Windows</value>
+  </data>
+  <data name="Sobre" xml:space="preserve">
+    <value>Acerca de</value>
+  </data>
+  <data name="SobreDica" xml:space="preserve">
+    <value>Acerca de Music Player (F1)</value>
+  </data>
+  <data name="Fila" xml:space="preserve">
+    <value>Cola de reproducción</value>
+  </data>
+  <data name="FilaVazia" xml:space="preserve">
+    <value>Arrastre canciones o carpetas aquí o use &quot;Agregar archivos&quot;. Arrastre los elementos de la lista para cambiar el orden.</value>
+  </data>
+  <data name="ResumoFila" xml:space="preserve">
+    <value>{0} canciones · {1}</value>
+  </data>
+  <data name="ResumoFilaUma" xml:space="preserve">
+    <value>1 canción · {0}</value>
+  </data>
+  <data name="NenhumaMusica" xml:space="preserve">
+    <value>No se está reproduciendo nada</value>
+  </data>
+  <data name="Posicao" xml:space="preserve">
+    <value>Posición</value>
+  </data>
+  <data name="Volume" xml:space="preserve">
+    <value>Volumen</value>
+  </data>
+  <data name="VolumeDica" xml:space="preserve">
+    <value>Volumen: {0}%</value>
+  </data>
+  <data name="MudoDica" xml:space="preserve">
+    <value>Silenciar</value>
+  </data>
+  <data name="ReativarSomDica" xml:space="preserve">
+    <value>Activar sonido</value>
+  </data>
+  <data name="TocarDica" xml:space="preserve">
+    <value>Reproducir (Espacio)</value>
+  </data>
+  <data name="PausarDica" xml:space="preserve">
+    <value>Pausar (Espacio)</value>
+  </data>
+  <data name="AnteriorDica" xml:space="preserve">
+    <value>Anterior (Ctrl+←)</value>
+  </data>
+  <data name="ProximoDica" xml:space="preserve">
+    <value>Siguiente (Ctrl+→)</value>
+  </data>
+  <data name="RepetirDesligadoDica" xml:space="preserve">
+    <value>Repetir: desactivado</value>
+  </data>
+  <data name="RepetirTodasDica" xml:space="preserve">
+    <value>Repetir: todas</value>
+  </data>
+  <data name="RepetirUmaDica" xml:space="preserve">
+    <value>Repetir: esta canción</value>
+  </data>
+  <data name="MenuTocar" xml:space="preserve">
+    <value>Reproducir</value>
+  </data>
+  <data name="MenuRemover" xml:space="preserve">
+    <value>Quitar de la cola</value>
+  </data>
+  <data name="MenuRemoverSelecionadas" xml:space="preserve">
+    <value>Quitar las seleccionadas de la cola</value>
+  </data>
+  <data name="MenuAbrirLocal" xml:space="preserve">
+    <value>Abrir ubicación del archivo</value>
+  </data>
+  <data name="ArrastarAdicionar" xml:space="preserve">
+    <value>Agregar a la cola</value>
+  </data>
+  <data name="NenhumArquivoSuportado" xml:space="preserve">
+    <value>No se encontró ningún archivo de audio compatible.</value>
+  </data>
+  <data name="ErroReproduzir" xml:space="preserve">
+    <value>No se pudo reproducir &quot;{0}&quot;. El archivo puede estar dañado, haber sido eliminado o usar un formato que Windows no reproduce.</value>
+  </data>
+  <data name="ErroInesperado" xml:space="preserve">
+    <value>Se produjo un error inesperado:
+{0}</value>
+  </data>
+  <data name="DescricaoSobre" xml:space="preserve">
+    <value>Reproductor de música con cola de reproducción, arrastrar y soltar e integración con las teclas multimedia de Windows.</value>
+  </data>
+  <data name="SobreVersao" xml:space="preserve">
+    <value>Versión</value>
+  </data>
+  <data name="SobreArquitetura" xml:space="preserve">
+    <value>Arquitectura</value>
+  </data>
+  <data name="SobreFormatos" xml:space="preserve">
+    <value>Formatos</value>
+  </data>
+  <data name="SobreInstaladoEm" xml:space="preserve">
+    <value>Instalado en</value>
+  </data>
+  <data name="SobreDados" xml:space="preserve">
+    <value>Datos del usuario</value>
+  </data>
+  <data name="SobreDesconhecida" xml:space="preserve">
+    <value>desconocida</value>
+  </data>
+  <data name="SobreCopiarInformacoes" xml:space="preserve">
+    <value>Copiar información</value>
+  </data>
+  <data name="SobreCopiado" xml:space="preserve">
+    <value>Copiado</value>
+  </data>
+  <data name="SobreNaoFoiPossivelCopiar" xml:space="preserve">
+    <value>No se pudo copiar</value>
+  </data>
+  <data name="Embaralhar" xml:space="preserve">
+    <value>Mezclar</value>
+  </data>
+  <data name="EmbaralharDica" xml:space="preserve">
+    <value>Poner las canciones de la cola en orden aleatorio (la actual pasa al principio)</value>
+  </data>
+  <data name="PainelTocando" xml:space="preserve">
+    <value>Portada</value>
+  </data>
+  <data name="OcultarPainelDica" xml:space="preserve">
+    <value>Ocultar el panel con la portada del álbum</value>
+  </data>
+  <data name="MostrarPainelDica" xml:space="preserve">
+    <value>Mostrar el panel con la portada del álbum</value>
+  </data>
+  <data name="SemMetadados" xml:space="preserve">
+    <value>Sin metadatos</value>
+  </data>
+</root>

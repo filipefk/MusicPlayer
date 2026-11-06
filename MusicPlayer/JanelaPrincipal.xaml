@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="MusicPlayer.JanelaPrincipal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MusicPlayer"
+    xmlns:nucleo="using:MusicPlayer.Nucleo">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Grid x:Name="grdRaiz">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TitleBar
+            x:Name="tlbTitulo"
+            Grid.Row="0"
+            IsBackButtonVisible="False"
+            IsPaneToggleButtonVisible="False">
+            <TitleBar.IconSource>
+                <ImageIconSource ImageSource="ms-appx:///Assets/MusicPlayer.ico" />
+            </TitleBar.IconSource>
+        </TitleBar>
+
+        <CommandBar
+            x:Name="cbrComandos"
+            Grid.Row="1"
+            Margin="4,0,4,4"
+            HorizontalAlignment="Left"
+            Background="Transparent"
+            DefaultLabelPosition="Right"
+            IsDynamicOverflowEnabled="False"
+            OverflowButtonVisibility="Collapsed">
+            <AppBarButton x:Name="abbAdicionarArquivos" Click="abbAdicionarArquivos_Click">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE8E5;" />
+                </AppBarButton.Icon>
+                <AppBarButton.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="O" Modifiers="Control" />
+                </AppBarButton.KeyboardAccelerators>
+            </AppBarButton>
+            <AppBarButton x:Name="abbAdicionarPasta" Click="abbAdicionarPasta_Click">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE838;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="abbEmbaralhar" IsEnabled="False" Click="abbEmbaralhar_Click">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE8B1;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="abbLimparFila" IsEnabled="False" Click="abbLimparFila_Click">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE894;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarSeparator />
+            <AppBarToggleButton x:Name="abbPainelTocando" IsChecked="True" Click="abbPainelTocando_Click">
+                <AppBarToggleButton.Icon>
+                    <FontIcon Glyph="&#xE8A0;" />
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <AppBarButton x:Name="abbIdioma">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE774;" />
+                </AppBarButton.Icon>
+                <AppBarButton.Flyout>
+                    <!-- Tag = código do idioma; vazio = idioma do Windows. Os nomes ficam sempre no próprio idioma. -->
+                    <MenuFlyout x:Name="mfoIdioma" Placement="Bottom">
+                        <RadioMenuFlyoutItem x:Name="rmiIdiomaWindows" GroupName="Idioma" Tag="" Click="rmiIdioma_Click" />
+                        <MenuFlyoutSeparator />
+                        <RadioMenuFlyoutItem x:Name="rmiPortugues" GroupName="Idioma" Tag="pt-BR" Text="Português (Brasil)" Click="rmiIdioma_Click" />
+                        <RadioMenuFlyoutItem x:Name="rmiIngles" GroupName="Idioma" Tag="en-US" Text="English" Click="rmiIdioma_Click" />
+                        <RadioMenuFlyoutItem x:Name="rmiEspanhol" GroupName="Idioma" Tag="es-ES" Text="Español" Click="rmiIdioma_Click" />
+                    </MenuFlyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarButton
+                x:Name="abbSobre"
+                KeyboardAcceleratorPlacementMode="Hidden"
+                Click="abbSobre_Click">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE946;" />
+                </AppBarButton.Icon>
+                <AppBarButton.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="F1" />
+                </AppBarButton.KeyboardAccelerators>
+            </AppBarButton>
+        </CommandBar>
+
+        <InfoBar
+            x:Name="ifbAviso"
+            Grid.Row="2"
+            Margin="8,0,8,8"
+            IsOpen="False"
+            Severity="Warning" />
+
+        <!-- Duas colunas em janelas largas; empilhado em janelas estreitas (AplicarLayout). -->
+        <Grid
+            x:Name="grdCorpo"
+            Grid.Row="3"
+            Padding="8,0,8,8"
+            ColumnSpacing="8"
+            RowSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="colTocando" Width="320" />
+                <ColumnDefinition x:Name="colFila" Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="rowSuperior" Height="*" />
+                <RowDefinition x:Name="rowInferior" Height="0" />
+            </Grid.RowDefinitions>
+
+            <Border x:Name="brdTocando" Grid.Column="0" Grid.Row="0" Padding="24" Style="{StaticResource CartaoStyle}">
+                <StackPanel x:Name="pnlTocando" VerticalAlignment="Center" Spacing="16">
+                    <Grid
+                        x:Name="grdCapa"
+                        Width="240"
+                        Height="240"
+                        HorizontalAlignment="Center"
+                        Background="{ThemeResource ControlFillColorSecondaryBrush}"
+                        CornerRadius="{ThemeResource OverlayCornerRadius}">
+                        <FontIcon
+                            x:Name="fntCapaPadrao"
+                            FontSize="72"
+                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                            Glyph="&#xE8D6;" />
+                        <Image x:Name="imgCapa" Stretch="UniformToFill" Visibility="Collapsed" />
+                    </Grid>
+                    <StackPanel x:Name="pnlTextosTocando" Spacing="4">
+                        <TextBlock
+                            x:Name="txtTitulo"
+                            HorizontalAlignment="Center"
+                            HorizontalTextAlignment="Center"
+                            MaxLines="2"
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="Wrap" />
+                        <TextBlock
+                            x:Name="txtArtista"
+                            HorizontalAlignment="Center"
+                            HorizontalTextAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            x:Name="txtAlbum"
+                            HorizontalAlignment="Center"
+                            HorizontalTextAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border x:Name="brdFila" Grid.Column="1" Grid.Row="0" Style="{StaticResource CartaoStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Padding="16,12,16,8" ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="txtTituloFila" VerticalAlignment="Center" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <TextBlock
+                            x:Name="txtResumoFila"
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}" />
+                    </Grid>
+
+                    <!-- Reordenar arrastando: o ListView move o item na ObservableCollection da fila. -->
+                    <ListView
+                        x:Name="lvwFila"
+                        Grid.Row="1"
+                        Padding="0,0,0,8"
+                        AllowDrop="True"
+                        CanDragItems="True"
+                        CanReorderItems="True"
+                        SelectionMode="Extended"
+                        ContextRequested="lvwFila_ContextRequested"
+                        DoubleTapped="lvwFila_DoubleTapped"
+                        KeyDown="lvwFila_KeyDown"
+                        SelectionChanged="lvwFila_SelectionChanged">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="nucleo:ItemFila">
+                                <Grid Padding="0,6" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon
+                                        FontSize="14"
+                                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                        Glyph="&#xE767;"
+                                        Visibility="{x:Bind EhAtual, Mode=OneWay}" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{x:Bind Titulo, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="{x:Bind local:JanelaPrincipal.TextoSubtitulo(Subtitulo), Mode=OneWay}"
+                                            TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind DuracaoTexto, Mode=OneWay}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <StackPanel
+                        x:Name="pnlFilaVazia"
+                        Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        IsHitTestVisible="False"
+                        Spacing="12">
+                        <FontIcon FontSize="40" Foreground="{ThemeResource TextFillColorTertiaryBrush}" Glyph="&#xE896;" />
+                        <TextBlock
+                            x:Name="txtFilaVazia"
+                            MaxWidth="280"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            HorizontalTextAlignment="Center"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Barra de reprodução -->
+        <Grid
+            x:Name="grdTransporte"
+            Grid.Row="4"
+            Padding="16,4,16,12"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="0,1,0,0"
+            RowSpacing="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" MinWidth="48" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" MinWidth="48" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    x:Name="txtDecorrido"
+                    VerticalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    HorizontalTextAlignment="Right"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="0:00" />
+                <Slider
+                    x:Name="sldPosicao"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    IsEnabled="False"
+                    IsThumbToolTipEnabled="False"
+                    Maximum="1"
+                    StepFrequency="1"
+                    ValueChanged="sldPosicao_ValueChanged" />
+                <TextBlock
+                    x:Name="txtDuracao"
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="0:00" />
+            </Grid>
+
+            <StackPanel
+                Grid.Row="1"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button x:Name="btnRepetir" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnRepetir_Click">
+                    <FontIcon x:Name="fntRepetir" FontSize="16" Glyph="&#xE8EE;" />
+                </Button>
+                <Button x:Name="btnAnterior" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnAnterior_Click">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Left" Modifiers="Control" />
+                    </Button.KeyboardAccelerators>
+                    <FontIcon FontSize="16" Glyph="&#xE892;" />
+                </Button>
+                <Button x:Name="btnTocarPausar" VerticalAlignment="Center" Style="{StaticResource BotaoTocarStyle}" Click="btnTocarPausar_Click">
+                    <FontIcon x:Name="fntTocarPausar" FontSize="20" Glyph="&#xE768;" />
+                </Button>
+                <Button x:Name="btnProximo" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnProximo_Click">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Right" Modifiers="Control" />
+                    </Button.KeyboardAccelerators>
+                    <FontIcon FontSize="16" Glyph="&#xE893;" />
+                </Button>
+                <Button x:Name="btnVolume" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}">
+                    <FontIcon x:Name="fntVolume" FontSize="16" Glyph="&#xE767;" />
+                    <Button.Flyout>
+                        <Flyout Placement="Top">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button x:Name="btnMudo" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnMudo_Click">
+                                    <FontIcon x:Name="fntMudo" FontSize="16" Glyph="&#xE74F;" />
+                                </Button>
+                                <Slider
+                                    x:Name="sldVolume"
+                                    Width="200"
+                                    VerticalAlignment="Center"
+                                    Maximum="100"
+                                    Minimum="0"
+                                    StepFrequency="1"
+                                    ValueChanged="sldVolume_ValueChanged" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <RootNamespace>MusicPlayer</RootNamespace>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
+    <Product>Music Player</Product>
+    <AssemblyTitle>Music Player</AssemblyTitle>
+    <Description>Tocador de músicas com fila de reprodução</Description>
+    <Company>Filipe Kanitz</Company>
+    <Authors>Filipe Kanitz</Authors>
+    <Copyright>Copyright © Filipe Kanitz</Copyright>
+    <NeutralLanguage>pt-BR</NeutralLanguage>
+    <!-- Idioma padrão dos textos (Strings\<idioma>\Resources.resw) no MusicPlayer.pri. -->
+    <DefaultLanguage>pt-BR</DefaultLanguage>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
+    <ApplicationIcon>Assets\MusicPlayer.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <!-- Necessário para o código gerado pelo LibraryImport (NativeMethods.cs). -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- O Main fica em Program.cs: decide a instância única antes de iniciar o WinUI. -->
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+
+    <!-- WinUI 3 (Windows App SDK), sem pacote MSIX: distribuído pelo instalador Inno Setup.
+         O Windows App SDK vai junto do programa (self-contained); o .NET 10 Runtime continua sendo exigido. -->
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <SelfContained>false</SelfContained>
+    <!-- Gera e publica o MusicPlayer.pri (XAML compilado e textos); sem ele o exe publicado fecha ao abrir. -->
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <!-- Constantes Microsoft.WindowsAppSDK.Release (versão exibida no "Sobre"). -->
+    <WindowsAppSdkIncludeVersionInfo>true</WindowsAppSdkIncludeVersionInfo>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <AppendPlatformToOutputPath>false</AppendPlatformToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.6.5" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2957" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MusicPlayer.Nucleo\MusicPlayer.Nucleo.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\MusicPlayer.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Arquivos parciais da JanelaPrincipal: agrupados sob o code-behind do XAML -->
+  <ItemGroup>
+    <Compile Update="JanelaPrincipal.Ativacao.cs;JanelaPrincipal.ArrastarSoltar.cs;JanelaPrincipal.Dialogos.cs;JanelaPrincipal.Fila.cs;JanelaPrincipal.Idioma.cs;JanelaPrincipal.Reproducao.cs;JanelaPrincipal.Sobre.cs">
+      <DependentUpon>JanelaPrincipal.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>
