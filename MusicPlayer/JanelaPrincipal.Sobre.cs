@@ -62,6 +62,12 @@ public sealed partial class JanelaPrincipal
             IsTextSelectionEnabled = true
         });
 
+        var slogan = CriarTextoSecundario();
+        slogan.Text = Textos.Obter("SobreSlogan");
+        slogan.TextWrapping = TextWrapping.Wrap;
+        slogan.FontStyle = Windows.UI.Text.FontStyle.Italic;
+        conteudo.Children.Add(slogan);
+
         var grade = new Grid { ColumnSpacing = 16, RowSpacing = 4 };
         grade.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         grade.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });

@@ -133,6 +133,9 @@
   <data name="DescricaoSobre" xml:space="preserve">
     <value>Reproductor de música con cola de reproducción, arrastrar y soltar e integración con las teclas multimedia de Windows.</value>
   </data>
+  <data name="SobreSlogan" xml:space="preserve">
+    <value>Sin anuncios, sin recopilación de datos, solo un reproductor de música.</value>
+  </data>
   <data name="SobreVersao" xml:space="preserve">
     <value>Versión</value>
   </data>

@@ -133,6 +133,9 @@
   <data name="DescricaoSobre" xml:space="preserve">
     <value>Music player with a play queue, drag and drop, and Windows media keys integration.</value>
   </data>
+  <data name="SobreSlogan" xml:space="preserve">
+    <value>No ads, no data collection, just a music player.</value>
+  </data>
   <data name="SobreVersao" xml:space="preserve">
     <value>Version</value>
   </data>

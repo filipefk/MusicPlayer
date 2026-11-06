@@ -133,6 +133,9 @@
   <data name="DescricaoSobre" xml:space="preserve">
     <value>Tocador de músicas com fila de reprodução, arrastar e soltar e integração com as teclas de mídia do Windows.</value>
   </data>
+  <data name="SobreSlogan" xml:space="preserve">
+    <value>Sem propagandas, sem coleta de dados, apenas um tocador de músicas.</value>
+  </data>
   <data name="SobreVersao" xml:space="preserve">
     <value>Versão</value>
   </data>

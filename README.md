@@ -2,6 +2,8 @@
 
 Tocador de músicas para Windows 10/11 feito em **WinUI 3** (Windows App SDK) e **.NET 10**, com o visual Fluent do Windows 11 (Mica, barra de título integrada, tema claro/escuro do Windows).
 
+> Sem propagandas, sem coleta de dados, sem acesso a internet, apenas um tocador de músicas.
+
 ## Funcionalidades
 
 - **Duplo clique em uma música** abre o programa e toca. Com o programa já aberto, a **mesma janela** recebe o arquivo: ele entra logo depois da música atual e começa a tocar. Vários arquivos abertos juntos no Explorer entram em sequência.
