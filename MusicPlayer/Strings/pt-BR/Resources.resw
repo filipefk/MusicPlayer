@@ -33,6 +33,12 @@
   <data name="LimparFilaDica" xml:space="preserve">
     <value>Parar e remover todas as músicas da fila</value>
   </data>
+  <data name="ConfirmarLimparFila" xml:space="preserve">
+    <value>Parar a reprodução e remover todas as músicas da fila?</value>
+  </data>
+  <data name="Cancelar" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
   <data name="Idioma" xml:space="preserve">
     <value>Idioma</value>
   </data>

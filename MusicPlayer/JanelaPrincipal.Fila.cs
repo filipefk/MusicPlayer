@@ -105,8 +105,11 @@ public sealed partial class JanelaPrincipal
             lvwFila.ScrollIntoView(_fila.Itens[0]);
     }
 
-    private void abbLimparFila_Click(object sender, RoutedEventArgs e)
+    private async void abbLimparFila_Click(object sender, RoutedEventArgs e)
     {
+        if (!await ConfirmarAsync(Textos.Obter("ConfirmarLimparFila"), Textos.Obter("LimparFila")))
+            return;
+
         PararEDescarregar();
         _fila.Limpar();
     }

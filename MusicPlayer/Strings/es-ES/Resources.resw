@@ -33,6 +33,12 @@
   <data name="LimparFilaDica" xml:space="preserve">
     <value>Detener y quitar todas las canciones de la cola</value>
   </data>
+  <data name="ConfirmarLimparFila" xml:space="preserve">
+    <value>¿Detener la reproducción y quitar todas las canciones de la cola?</value>
+  </data>
+  <data name="Cancelar" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
   <data name="Idioma" xml:space="preserve">
     <value>Idioma</value>
   </data>

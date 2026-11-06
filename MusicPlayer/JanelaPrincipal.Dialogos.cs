@@ -37,6 +37,34 @@ public sealed partial class JanelaPrincipal
         }
     }
 
+    private async Task<bool> ConfirmarAsync(string mensagem, string textoConfirmar)
+    {
+        await _filaDialogos.WaitAsync();
+        try
+        {
+            var dialogo = new ContentDialog
+            {
+                XamlRoot = grdRaiz.XamlRoot,
+                Style = (Style)Application.Current.Resources["DefaultContentDialogStyle"],
+                RequestedTheme = grdRaiz.ActualTheme,
+                Title = NomeAplicativo,
+                Content = new TextBlock
+                {
+                    Text = mensagem,
+                    TextWrapping = TextWrapping.Wrap
+                },
+                PrimaryButtonText = textoConfirmar,
+                CloseButtonText = Textos.Obter("Cancelar"),
+                DefaultButton = ContentDialogButton.Close
+            };
+            return await dialogo.ShowAsync() == ContentDialogResult.Primary;
+        }
+        finally
+        {
+            _filaDialogos.Release();
+        }
+    }
+
     public void MostrarErroInesperado(Exception ex) => Disparar(MostrarErroInesperadoAsync(ex));
 
     private async Task MostrarErroInesperadoAsync(Exception ex)
