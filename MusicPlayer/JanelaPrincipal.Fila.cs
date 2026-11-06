@@ -20,14 +20,17 @@ public sealed partial class JanelaPrincipal
     private readonly MenuFlyoutItem _mfiTocar = new() { Icon = new FontIcon { Glyph = "" } };
     private readonly MenuFlyoutItem _mfiRemover = new() { Icon = new FontIcon { Glyph = "" } };
     private readonly MenuFlyoutItem _mfiAbrirLocal = new() { Icon = new FontIcon { Glyph = "" } };
+    private readonly MenuFlyoutItem _mfiEditarMetadados = new() { Icon = new FontIcon { Glyph = "" } };
 
     private void ConfigurarMenuFila()
     {
         _mfiTocar.Click += (_, _) => TocarSelecionado();
         _mfiRemover.Click += (_, _) => RemoverSelecionados();
         _mfiAbrirLocal.Click += (_, _) => AbrirLocalSelecionado();
+        _mfiEditarMetadados.Click += (_, _) => EditarMetadadosSelecionado();
         _mfoFila.Items.Add(_mfiTocar);
         _mfoFila.Items.Add(new MenuFlyoutSeparator());
+        _mfoFila.Items.Add(_mfiEditarMetadados);
         _mfoFila.Items.Add(_mfiAbrirLocal);
         _mfoFila.Items.Add(_mfiRemover);
     }
@@ -140,6 +143,7 @@ public sealed partial class JanelaPrincipal
         var quantidade = lvwFila.SelectedItems.Count;
         _mfiTocar.IsEnabled = quantidade == 1;
         _mfiAbrirLocal.IsEnabled = quantidade == 1;
+        _mfiEditarMetadados.IsEnabled = quantidade == 1 && lvwFila.SelectedItems[0] is ItemFila item && EditorMetadados.PodeEditar(item.Caminho);
     }
 
     // Clique direito num item não selecionado passa a selecionar só ele (como no Explorer).
@@ -158,6 +162,7 @@ public sealed partial class JanelaPrincipal
         _mfiTocar.Text = Textos.Obter("MenuTocar");
         _mfiRemover.Text = Textos.Obter(lvwFila.SelectedItems.Count == 1 ? "MenuRemover" : "MenuRemoverSelecionadas");
         _mfiAbrirLocal.Text = Textos.Obter("MenuAbrirLocal");
+        _mfiEditarMetadados.Text = Textos.Obter("MenuEditarMetadados");
 
         var opcoes = new FlyoutShowOptions();
         if (e.TryGetPosition(lvwFila, out var ponto))

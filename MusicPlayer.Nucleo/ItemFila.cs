@@ -54,8 +54,8 @@ public sealed partial class ItemFila : ObservableObject
         if (metadados is null)
             return;
 
-        if (!string.IsNullOrWhiteSpace(metadados.Titulo))
-            Titulo = metadados.Titulo.Trim();
+        // Sem título (inclusive apagado na edição das tags): volta ao nome do arquivo.
+        Titulo = string.IsNullOrWhiteSpace(metadados.Titulo) ? Path.GetFileNameWithoutExtension(Caminho) : metadados.Titulo.Trim();
         Artista = metadados.Artista?.Trim() ?? string.Empty;
         Album = metadados.Album?.Trim() ?? string.Empty;
         if (metadados.Duracao > TimeSpan.Zero)

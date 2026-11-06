@@ -2,6 +2,7 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using MusicPlayer.Nucleo;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
@@ -165,11 +166,28 @@ public sealed partial class JanelaPrincipal : Window
 
     private void grdRaiz_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (e.Key != VirtualKey.Space || e.Handled)
+        if (e.Key != VirtualKey.Space || e.Handled || !EspacoEhDoPlayer(e.OriginalSource as DependencyObject))
             return;
 
         e.Handled = true;
         AlternarTocarPausar();
+    }
+
+    // Diálogos e menus ficam numa camada de popups fora do grdRaiz, mas a tecla também chega aqui:
+    // só vale tocar/pausar quando o foco está na própria janela e fora de um campo de texto.
+    private bool EspacoEhDoPlayer(DependencyObject? origem)
+    {
+        if (origem is null)
+            return true;
+
+        for (var elemento = origem; elemento is not null; elemento = VisualTreeHelper.GetParent(elemento))
+        {
+            if (elemento is TextBox or PasswordBox or RichEditBox or AutoSuggestBox or NumberBox)
+                return false;
+            if (ReferenceEquals(elemento, grdRaiz))
+                return true;
+        }
+        return false;
     }
 
     private void Itens_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
