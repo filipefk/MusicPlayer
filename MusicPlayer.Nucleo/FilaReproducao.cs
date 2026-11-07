@@ -113,25 +113,27 @@ public sealed class FilaReproducao
         return new ResultadoRemocao(atualRemovido, seguinte);
     }
 
-    // A música atual vai para o topo e as demais ficam em ordem aleatória depois dela.
-    // Usa Move (e não Clear + Add) para o ListView manter os itens e a seleção.
-    public void Embaralhar()
+    // Embaralhar em duas etapas, para o app aplicar aos poucos (com progresso): primeiro a ordem nova,
+    // com a música atual no topo e as demais em ordem aleatória; depois um MoverPara por item, na ordem.
+    // Move (e não Clear + Add) faz o ListView manter os itens e a seleção.
+    public IReadOnlyList<ItemFila> SortearOrdem()
     {
-        if (Itens.Count < 2)
-            return;
-
         var restantes = Itens.Where(i => !ReferenceEquals(i, Atual)).ToArray();
         RandomNumberGenerator.Shuffle(restantes.AsSpan());
-        IEnumerable<ItemFila> ordem = Atual is null ? restantes : [Atual, .. restantes];
+        return Atual is null ? restantes : [Atual, .. restantes];
+    }
 
-        var destino = 0;
-        foreach (var item in ordem)
-        {
-            var origem = Itens.IndexOf(item);
-            if (origem != destino)
-                Itens.Move(origem, destino);
-            destino++;
-        }
+    // false = o item saiu da fila (removido durante o embaralhamento).
+    public bool MoverPara(ItemFila item, int destino)
+    {
+        var origem = Itens.IndexOf(item);
+        if (origem < 0)
+            return false;
+
+        destino = Math.Clamp(destino, 0, Itens.Count - 1);
+        if (origem != destino)
+            Itens.Move(origem, destino);
+        return true;
     }
 
     public void Limpar()

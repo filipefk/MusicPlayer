@@ -28,7 +28,9 @@ public partial class App : Application
 
         UnhandledException += App_UnhandledException;
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
-            Trace.TraceError($"Erro não tratado: {e.ExceptionObject}");
+            RegistroErros.Gravar("AppDomain.UnhandledException", e.ExceptionObject);
+        TaskScheduler.UnobservedTaskException += (_, e) =>
+            RegistroErros.Gravar("TaskScheduler.UnobservedTaskException", e.Exception);
     }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
@@ -75,7 +77,7 @@ public partial class App : Application
     // Exceções de event handlers e de tarefas disparadas por JanelaPrincipal.Disparar chegam aqui.
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
-        Trace.TraceError(e.Exception.ToString());
+        RegistroErros.Gravar("Application.UnhandledException", e.Exception);
         if (_janela is null)
             return;
 

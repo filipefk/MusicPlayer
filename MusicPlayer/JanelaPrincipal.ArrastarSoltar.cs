@@ -30,11 +30,15 @@ public sealed partial class JanelaPrincipal
         }
     }
 
-    private async void grdRaiz_Drop(object sender, DragEventArgs e)
+    // O adiamento é pedido antes do primeiro await, ainda dentro do evento.
+    private void grdRaiz_Drop(object sender, DragEventArgs e)
     {
-        if (!e.DataView.Contains(StandardDataFormats.StorageItems))
-            return;
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
+            Disparar(SoltarAsync(e));
+    }
 
+    private async Task SoltarAsync(DragEventArgs e)
+    {
         // A lista de itens só pode ser lida durante o evento.
         IReadOnlyList<IStorageItem> itens;
         var adiamento = e.GetDeferral();

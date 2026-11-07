@@ -1,17 +1,29 @@
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.Storage.Pickers;
 using MusicPlayer.Nucleo;
 using System.Diagnostics;
+using System.Numerics;
 using Windows.System;
+using Windows.UI.ViewManagement;
 
 namespace MusicPlayer;
 
 public sealed partial class JanelaPrincipal
 {
+    private const string GlifoEmbaralhar = "";
+    // Duas setas em círculo (Sync), girando enquanto embaralha.
+    private const string GlifoEmbaralhando = "";
+    private const string PropriedadeGiro = "RotationAngleInDegrees";
+    // Uma volta; também é o tempo mínimo de giro, para não "piscar" em filas pequenas.
+    private static readonly TimeSpan DuracaoGiroEmbaralhar = TimeSpan.FromMilliseconds(700);
+
+    private bool _embaralhando;
     private readonly MenuFlyout _mfoFila = new();
     private readonly MenuFlyoutItem _mfiTocar = new() { Icon = new FontIcon { Glyph = "" } };
     private readonly MenuFlyoutItem _mfiRemover = new() { Icon = new FontIcon { Glyph = "" } };
@@ -54,7 +66,9 @@ public sealed partial class JanelaPrincipal
         return Task.Run(() => (ExpansorCaminhos.Expandir(lista), lista.Where(Directory.Exists).ToList()));
     }
 
-    private async void abbAdicionarArquivos_Click(object sender, RoutedEventArgs e)
+    private void abbAdicionarArquivos_Click(object sender, RoutedEventArgs e) => Disparar(AdicionarArquivosAsync());
+
+    private async Task AdicionarArquivosAsync()
     {
         var seletor = new FileOpenPicker(AppWindow.Id)
         {
@@ -69,7 +83,9 @@ public sealed partial class JanelaPrincipal
             await AdicionarAoFimAsync(escolhidos.Select(r => r.Path));
     }
 
-    private async void abbAdicionarPasta_Click(object sender, RoutedEventArgs e)
+    private void abbAdicionarPasta_Click(object sender, RoutedEventArgs e) => Disparar(AdicionarPastaAsync());
+
+    private async Task AdicionarPastaAsync()
     {
         var seletor = new FolderPicker(AppWindow.Id) { SuggestedStartLocation = PickerLocationId.MusicLibrary };
         var pasta = await seletor.PickSingleFolderAsync();
@@ -77,18 +93,77 @@ public sealed partial class JanelaPrincipal
             await AdicionarAoFimAsync([pasta.Path]);
     }
 
-    private void abbEmbaralhar_Click(object sender, RoutedEventArgs e)
+    private void abbEmbaralhar_Click(object sender, RoutedEventArgs e) => Disparar(EmbaralharAsync());
+
+    // A ordem nova é aplicada de uma vez (a lista é desenhada uma vez só, sem piscar). Isso ocupa a
+    // thread da interface, por isso o giro do ícone é uma animação do compositor, que segue sozinha.
+    private async Task EmbaralharAsync()
     {
-        _fila.Embaralhar();
-        // Com filtro, a lista visível só é reordenada no próximo AplicarFiltro: aplica já para rolar ao topo certo.
-        if (FiltroAtivo)
-            AplicarFiltro();
-        var visiveis = FiltroAtivo ? _itensFiltrados : _fila.Itens;
-        if (visiveis.Count > 0)
-            lvwFila.ScrollIntoView(visiveis[0]);
+        if (_embaralhando || _fila.Itens.Count < 2)
+            return;
+
+        _embaralhando = true;
+        var inicio = Stopwatch.StartNew();
+        try
+        {
+            // Desabilita a pesquisa (limpando-a, se ativa) enquanto embaralha.
+            AtualizarEstadoCarga();
+            var animado = IniciarGiroEmbaralhar();
+            // Dois quadros: o compositor recebe a animação antes de a thread ficar ocupada.
+            await Task.Delay(TimeSpan.FromMilliseconds(32));
+
+            var destino = 0;
+            foreach (var item in _fila.SortearOrdem())
+            {
+                if (_fila.MoverPara(item, destino))
+                    destino++;
+            }
+            if (_fila.Itens.Count > 0)
+                lvwFila.ScrollIntoView(_fila.Itens[0]);
+
+            var restante = DuracaoGiroEmbaralhar - inicio.Elapsed;
+            if (animado && restante > TimeSpan.Zero)
+                await Task.Delay(restante);
+        }
+        finally
+        {
+            PararGiroEmbaralhar();
+            _embaralhando = false;
+            AtualizarEstadoCarga();
+        }
     }
 
-    private async void abbLimparFila_Click(object sender, RoutedEventArgs e)
+    // Com "Efeitos de animação" desligado no Windows, só troca o ícone.
+    private bool IniciarGiroEmbaralhar()
+    {
+        fntEmbaralhar.Glyph = GlifoEmbaralhando;
+        if (!new UISettings().AnimationsEnabled)
+            return false;
+
+        var visual = ElementCompositionPreview.GetElementVisual(fntEmbaralhar);
+        var compositor = visual.Compositor;
+        var giro = compositor.CreateScalarKeyFrameAnimation();
+        giro.InsertKeyFrame(0f, 0f);
+        giro.InsertKeyFrame(1f, 360f, compositor.CreateLinearEasingFunction());
+        giro.Duration = DuracaoGiroEmbaralhar;
+        giro.IterationBehavior = AnimationIterationBehavior.Forever;
+
+        visual.CenterPoint = new Vector3((float)(fntEmbaralhar.ActualWidth / 2), (float)(fntEmbaralhar.ActualHeight / 2), 0);
+        visual.StartAnimation(PropriedadeGiro, giro);
+        return true;
+    }
+
+    private void PararGiroEmbaralhar()
+    {
+        var visual = ElementCompositionPreview.GetElementVisual(fntEmbaralhar);
+        visual.StopAnimation(PropriedadeGiro);
+        visual.RotationAngleInDegrees = 0;
+        fntEmbaralhar.Glyph = GlifoEmbaralhar;
+    }
+
+    private void abbLimparFila_Click(object sender, RoutedEventArgs e) => Disparar(LimparFilaAsync());
+
+    private async Task LimparFilaAsync()
     {
         if (!await ConfirmarAsync(Textos.Obter("ConfirmarLimparFila"), Textos.Obter("LimparFila")))
             return;

@@ -59,7 +59,7 @@
             </AppBarButton>
             <AppBarButton x:Name="abbEmbaralhar" IsEnabled="False" Click="abbEmbaralhar_Click">
                 <AppBarButton.Icon>
-                    <FontIcon Glyph="&#xE8B1;" />
+                    <FontIcon x:Name="fntEmbaralhar" Glyph="&#xE8B1;" />
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="abbLimparFila" IsEnabled="False" Click="abbLimparFila_Click">

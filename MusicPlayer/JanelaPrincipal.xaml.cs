@@ -192,7 +192,7 @@ public sealed partial class JanelaPrincipal : Window
     {
         // Só o que é barato a cada item; resumo (soma a fila toda) e filtro vão em lote.
         abbLimparFila.IsEnabled = _fila.Itens.Count > 0;
-        abbEmbaralhar.IsEnabled = !EmCarga && _fila.Itens.Count > 1;
+        AtualizarBotaoEmbaralhar();
         AtualizarPainelVazio();
         AgendarAtualizacaoFila();
     }
@@ -246,7 +246,18 @@ public sealed partial class JanelaPrincipal : Window
         EstadoFila.Capturar(_fila, _player.PlaybackSession.Position).Salvar();
     }
 
-    // Ponto único de "dispara e esquece": uma exceção da tarefa chega ao Application.UnhandledException
-    // (tratado em App.xaml.cs) em vez de ser perdida.
-    private static async void Disparar(Task tarefa) => await tarefa;
+    // Ponto único de "dispara e esquece". A exceção é tratada aqui: relançada pelo async void, ela volta
+    // pela DispatcherQueue sem passar pelo Application.UnhandledException e o WinUI encerra o processo.
+    private async void Disparar(Task tarefa)
+    {
+        try
+        {
+            await tarefa;
+        }
+        catch (Exception ex)
+        {
+            RegistroErros.Gravar(nameof(Disparar), ex);
+            MostrarErroInesperado(ex);
+        }
+    }
 }

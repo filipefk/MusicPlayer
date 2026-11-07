@@ -187,18 +187,22 @@ public sealed partial class JanelaPrincipal
         AtualizarEstadoCarga();
     }
 
+    // Carga das tags ou embaralhamento em andamento: a pesquisa fica desabilitada.
+    private bool Ocupado => EmCarga || _embaralhando;
+
     private void AtualizarEstadoCarga()
     {
-        var emCarga = EmCarga;
-        // Pesquisa ativa quando chega uma carga nova: volta à lista completa antes de desabilitar a caixa.
-        if (emCarga && FiltroAtivo)
+        var ocupado = Ocupado;
+        // Pesquisa ativa quando o app fica ocupado: volta à lista completa antes de desabilitar a caixa.
+        if (ocupado && FiltroAtivo)
             LimparFiltro();
 
-        asbFiltro.IsEnabled = !emCarga;
-        asbFiltro.PlaceholderText = Textos.Obter(emCarga ? "PesquisarCarregando" : "Pesquisar");
-        abbEmbaralhar.IsEnabled = !emCarga && _fila.Itens.Count > 1;
-        prbCarga.Visibility = emCarga ? Visibility.Visible : Visibility.Collapsed;
+        asbFiltro.IsEnabled = !ocupado;
+        asbFiltro.PlaceholderText = Textos.Obter(ocupado ? "PesquisarAguarde" : "Pesquisar");
+        AtualizarBotaoEmbaralhar();
 
+        var emCarga = EmCarga;
+        prbCarga.Visibility = emCarga ? Visibility.Visible : Visibility.Collapsed;
         if (emCarga)
         {
             prbCarga.Maximum = Math.Max(1, _totalCarga);
@@ -209,4 +213,9 @@ public sealed partial class JanelaPrincipal
             _totalCarga = _concluidosCarga = 0;
         }
     }
+
+    // Não desabilita durante o próprio embaralhamento (apagaria o ícone girando); cliques repetidos
+    // são ignorados em EmbaralharAsync.
+    private void AtualizarBotaoEmbaralhar() =>
+        abbEmbaralhar.IsEnabled = !EmCarga && _fila.Itens.Count > 1;
 }

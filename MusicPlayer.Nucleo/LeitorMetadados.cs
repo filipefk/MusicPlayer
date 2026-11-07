@@ -38,8 +38,8 @@ public static class LeitorMetadados
             var pagina = await ObterPaginaAsync(consulta, inicio).ConfigureAwait(false);
             foreach (var arquivo in pagina)
             {
-                if (await LerArquivoSemFalharAsync(arquivo).ConfigureAwait(false) is { } metadados)
-                    yield return (arquivo.Path, metadados);
+                if (await LerArquivoSemFalharAsync(arquivo).ConfigureAwait(false) is { } leitura)
+                    yield return leitura;
             }
 
             if (pagina.Count < TamanhoPaginaPasta)
@@ -55,15 +55,17 @@ public static class LeitorMetadados
         return new MetadadosMusica(musica.Title, artista, musica.Album, musica.Duration, File.GetLastWriteTimeUtc(arquivo.Path));
     }
 
-    private static async Task<MetadadosMusica?> LerArquivoSemFalharAsync(StorageFile arquivo)
+    // Até o Path pode falhar se o serviço da consulta caiu: fica dentro do try.
+    private static async Task<(string Caminho, MetadadosMusica Metadados)?> LerArquivoSemFalharAsync(StorageFile arquivo)
     {
         try
         {
-            return await LerArquivoAsync(arquivo).ConfigureAwait(false);
+            var caminho = arquivo.Path;
+            return (caminho, await LerArquivoAsync(arquivo).ConfigureAwait(false));
         }
         catch (Exception ex) when (EhFalhaDeLeitura(ex))
         {
-            Trace.TraceWarning($"Metadados não lidos de {arquivo.Path}: {ex.Message}");
+            Trace.TraceWarning($"Metadados não lidos na leitura da pasta: {ex.Message}");
             return null;
         }
     }
@@ -88,11 +90,15 @@ public static class LeitorMetadados
         }
     }
 
+    // A página vem do serviço de consulta do Windows, que pode cair no meio de pastas grandes
+    // (RPC_E_SERVER_DIED_DNE ao percorrê-la): é copiada aqui, dentro do try. Com falha a leitura em lote
+    // para, e os leitores arquivo a arquivo do app terminam o que faltou.
     private static async Task<IReadOnlyList<StorageFile>> ObterPaginaAsync(StorageFileQueryResult consulta, uint inicio)
     {
         try
         {
-            return await consulta.GetFilesAsync(inicio, TamanhoPaginaPasta).AsTask().ConfigureAwait(false);
+            var pagina = await consulta.GetFilesAsync(inicio, TamanhoPaginaPasta).AsTask().ConfigureAwait(false);
+            return [.. pagina];
         }
         catch (Exception ex) when (EhFalhaDeLeitura(ex))
         {

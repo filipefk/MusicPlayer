@@ -16,7 +16,7 @@ public sealed partial class JanelaPrincipal
 {
     private const string UrlCodigoFonte = "https://github.com/filipefk/MusicPlayer";
 
-    private async void abbSobre_Click(object sender, RoutedEventArgs e) => await MostrarSobreAsync();
+    private void abbSobre_Click(object sender, RoutedEventArgs e) => Disparar(MostrarSobreAsync());
 
     private async Task MostrarSobreAsync()
     {

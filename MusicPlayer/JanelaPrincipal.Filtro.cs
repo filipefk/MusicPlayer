@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using MusicPlayer.Nucleo;
 using System.Collections.ObjectModel;
 using Windows.System;
@@ -17,6 +18,7 @@ public sealed partial class JanelaPrincipal
     private readonly ObservableCollection<ItemFila> _itensFiltrados = [];
     private Microsoft.UI.Dispatching.DispatcherQueueTimer _temporizadorFiltro = null!;
     private string[] _palavrasFiltro = [];
+    private bool _botaoLimparFiltroLigado;
 
     private bool FiltroAtivo => _palavrasFiltro.Length > 0;
 
@@ -34,6 +36,8 @@ public sealed partial class JanelaPrincipal
             e.Handled = true;
         };
         grdRaiz.KeyboardAccelerators.Add(atalho);
+
+        asbFiltro.Loaded += (_, _) => AtualizarBotaoLimparFiltro();
     }
 
     private void asbFiltro_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -41,6 +45,40 @@ public sealed partial class JanelaPrincipal
         _palavrasFiltro = FiltroFila.SepararPalavras(sender.Text);
         _temporizadorFiltro.Stop();
         _temporizadorFiltro.Start();
+        AtualizarBotaoLimparFiltro();
+    }
+
+    // O modelo do TextBox só mostra o X com o campo focado (estado visual ButtonVisible); o valor local
+    // vence o Collapsed do modelo, então o X fica visível sempre que houver texto. O clique interno do
+    // TextBox também só limpa com foco, por isso o X chama o LimparFiltro.
+    private void AtualizarBotaoLimparFiltro()
+    {
+        if (ProcurarDescendente(asbFiltro, "DeleteButton") is not Button botao)
+            return;
+
+        if (!_botaoLimparFiltroLigado)
+        {
+            botao.Click += (_, _) => LimparFiltro();
+            _botaoLimparFiltroLigado = true;
+        }
+
+        if (asbFiltro.Text.Length > 0)
+            botao.Visibility = Visibility.Visible;
+        else
+            botao.ClearValue(UIElement.VisibilityProperty);
+    }
+
+    private static FrameworkElement? ProcurarDescendente(DependencyObject raiz, string nome)
+    {
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(raiz); i++)
+        {
+            var filho = VisualTreeHelper.GetChild(raiz, i);
+            if (filho is FrameworkElement elemento && elemento.Name == nome)
+                return elemento;
+            if (ProcurarDescendente(filho, nome) is { } encontrado)
+                return encontrado;
+        }
+        return null;
     }
 
     private void asbFiltro_KeyDown(object sender, KeyRoutedEventArgs e)

@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using MusicPlayer.Nucleo;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Windows.Media;
 using Windows.Media.Core;
 using Windows.Media.Playback;
@@ -143,7 +144,7 @@ public sealed partial class JanelaPrincipal
         {
             arquivo = await StorageFile.GetFileFromPathAsync(item.Caminho);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or COMException)
         {
             if (versao == _versaoCarga)
                 TratarFalhaReproducao(ex.Message);

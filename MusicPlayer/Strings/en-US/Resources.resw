@@ -220,8 +220,8 @@
   <data name="Pesquisar" xml:space="preserve">
     <value>Search</value>
   </data>
-  <data name="PesquisarCarregando" xml:space="preserve">
-    <value>Wait for the songs to load…</value>
+  <data name="PesquisarAguarde" xml:space="preserve">
+    <value>Please wait…</value>
   </data>
   <data name="CarregandoFila" xml:space="preserve">
     <value>Loading {0} of {1}…</value>
