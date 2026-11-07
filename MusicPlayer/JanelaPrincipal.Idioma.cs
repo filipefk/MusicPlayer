@@ -36,6 +36,7 @@ public sealed partial class JanelaPrincipal
         ToolTipService.SetToolTip(abbEmbaralhar, Textos.Obter("EmbaralharDica"));
         abbLimparFila.Label = Textos.Obter("LimparFila");
         ToolTipService.SetToolTip(abbLimparFila, Textos.Obter("LimparFilaDica"));
+        abbPreencherPeloNome.Label = Textos.Obter("PreencherPeloNome");
         abbPainelTocando.Label = Textos.Obter("PainelTocando");
         AtualizarDicaPainelTocando();
 

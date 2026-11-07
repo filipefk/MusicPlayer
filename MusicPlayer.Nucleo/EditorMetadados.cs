@@ -10,6 +10,7 @@ namespace MusicPlayer.Nucleo;
 public static class EditorMetadados
 {
     private const string SeparadorGeneros = "; ";
+    private const string SeparadorNomeComEspacos = " - ";
     private const int TentativasGravacao = 3;
     private const int EsperaEntreTentativasMs = 250;
     // HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION): o arquivo acabou de ser liberado pelo player e ainda está aberto.
@@ -19,6 +20,32 @@ public static class EditorMetadados
 
     public static bool PodeEditar(string caminho) =>
         !string.IsNullOrWhiteSpace(caminho) && ExtensoesEditaveis.Contains(Path.GetExtension(caminho));
+
+    // "Artista - Título" ou "Artista_Título": vale o primeiro " - "; sem ele, o primeiro "-" ou "_" da esquerda para a direita.
+    // Sem título nem artista nas tags, preenche os dois a partir do nome do arquivo (sem a extensão).
+    public static TagsMusica SugerirPeloNome(string caminho, TagsMusica tags)
+    {
+        ArgumentNullException.ThrowIfNull(tags);
+        if (!string.IsNullOrWhiteSpace(tags.Titulo) || !string.IsNullOrWhiteSpace(tags.Artista))
+            return tags;
+
+        var nome = Path.GetFileNameWithoutExtension(caminho);
+        // " - " tem preferência, para não quebrar nomes com hífen como "Jay-Z - Song".
+        var separador = nome.IndexOf(SeparadorNomeComEspacos, StringComparison.Ordinal);
+        var tamanhoSeparador = SeparadorNomeComEspacos.Length;
+        if (separador < 0)
+        {
+            separador = nome.IndexOfAny(['-', '_']);
+            tamanhoSeparador = 1;
+        }
+
+        if (separador < 0)
+            return tags;
+
+        var artista = nome[..separador].Trim();
+        var titulo = nome[(separador + tamanhoSeparador)..].Trim();
+        return artista.Length == 0 || titulo.Length == 0 ? tags : tags with { Titulo = titulo, Artista = artista };
+    }
 
     public static async Task<TagsMusica?> LerAsync(string caminho)
     {

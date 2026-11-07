@@ -12,6 +12,10 @@ public sealed partial class JanelaPrincipal
     private const double FaixaMaxima = 999;
     private const double AnoMaximo = 9999;
 
+    private bool _preenchendo;
+    private int _totalPreenchimento;
+    private int _concluidosPreenchimento;
+
     private void EditarMetadadosSelecionado()
     {
         if (lvwFila.SelectedItems.Count == 1 && lvwFila.SelectedItems[0] is ItemFila item && EditorMetadados.PodeEditar(item.Caminho))
@@ -38,8 +42,9 @@ public sealed partial class JanelaPrincipal
 
     private async Task<TagsMusica?> PedirTagsAsync(ItemFila item, TagsMusica tags)
     {
-        var txbTitulo = CriarCampoTexto("CampoTitulo", tags.Titulo);
-        var txbArtista = CriarCampoTexto("CampoArtista", tags.Artista);
+        var sugeridas = EditorMetadados.SugerirPeloNome(item.Caminho, tags);
+        var txbTitulo = CriarCampoTexto("CampoTitulo", sugeridas.Titulo);
+        var txbArtista = CriarCampoTexto("CampoArtista", sugeridas.Artista);
         var txbAlbum = CriarCampoTexto("CampoAlbum", tags.Album);
         var nmbFaixa = CriarCampoNumero("CampoFaixa", tags.Faixa, FaixaMaxima);
         var nmbAno = CriarCampoNumero("CampoAno", tags.Ano, AnoMaximo);
@@ -57,12 +62,14 @@ public sealed partial class JanelaPrincipal
         grdNumeros.Children.Add(nmbAno);
 
         var pnlCampos = new StackPanel { Spacing = 12, Width = LarguraDialogoMetadados };
+        // Selecionável (Ctrl+C ou menu de contexto) para copiar partes do nome para os campos.
         pnlCampos.Children.Add(new TextBlock
         {
             Text = item.NomeArquivo,
             Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
             Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
-            TextTrimming = TextTrimming.CharacterEllipsis
+            IsTextSelectionEnabled = true,
+            TextWrapping = TextWrapping.Wrap
         });
         pnlCampos.Children.Add(txbTitulo);
         pnlCampos.Children.Add(txbArtista);
@@ -128,6 +135,89 @@ public sealed partial class JanelaPrincipal
 
     private static uint ValorNumero(NumberBox campo) =>
         double.IsNaN(campo.Value) || campo.Value < 1 ? 0 : (uint)Math.Round(campo.Value);
+
+    private void abbPreencherPeloNome_Click(object sender, RoutedEventArgs e) => Disparar(PreencherPeloNomeAsync());
+
+    // Aplica a sugestão do diálogo de edição a toda a fila: só arquivos editáveis sem título e sem artista
+    // cujo nome segue o padrão. Um arquivo por vez, com a lista, a pesquisa e o embaralhar desabilitados.
+    private async Task PreencherPeloNomeAsync()
+    {
+        if (Ocupado)
+            return;
+
+        var candidatos = _fila.Itens.Where(PodePreencherPeloNome).ToList();
+        if (candidatos.Count == 0)
+        {
+            await AvisarAsync(Textos.Obter("PreencherPeloNomeNenhum"));
+            return;
+        }
+
+        if (!await ConfirmarAsync(Textos.Formatar("ConfirmarPreencherPeloNome", candidatos.Count), Textos.Obter("Atualizar"))
+            || Ocupado)
+            return;
+
+        var geracao = _geracaoCarga;
+        var atualizados = 0;
+        var falhas = 0;
+        _preenchendo = true;
+        _totalPreenchimento = candidatos.Count;
+        _concluidosPreenchimento = 0;
+        AtualizarEstadoCarga();
+        AtualizarResumoFila();
+        try
+        {
+            foreach (var item in candidatos)
+            {
+                // Com a lista desabilitada, só "Limpar fila" tira músicas dela: o resto não é mais da fila.
+                if (geracao != _geracaoCarga)
+                    break;
+
+                // As tags carregadas não distinguem título vazio de título igual ao nome do arquivo.
+                var tags = await EditorMetadados.LerAsync(item.Caminho);
+                if (tags is null)
+                {
+                    falhas++;
+                }
+                else
+                {
+                    var sugeridas = EditorMetadados.SugerirPeloNome(item.Caminho, tags);
+                    if (sugeridas != tags)
+                    {
+                        if (await GravarTagsAsync(item, sugeridas) is null)
+                            atualizados++;
+                        else
+                            falhas++;
+                    }
+                }
+
+                _concluidosPreenchimento++;
+                AgendarAtualizacaoFila();
+            }
+        }
+        finally
+        {
+            _preenchendo = false;
+            _totalPreenchimento = _concluidosPreenchimento = 0;
+            AtualizarEstadoCarga();
+            AtualizarResumoFila();
+        }
+
+        if (falhas > 0)
+            MostrarAviso(Textos.Formatar("PreencherPeloNomeResultadoErros", atualizados, falhas));
+        else
+            MostrarAviso(Textos.Formatar("PreencherPeloNomeResultado", atualizados), InfoBarSeverity.Success);
+    }
+
+    // Triagem pelas tags já carregadas: sem título o ItemFila mostra o nome do arquivo sem a extensão.
+    private static bool PodePreencherPeloNome(ItemFila item)
+    {
+        if (!EditorMetadados.PodeEditar(item.Caminho) || item.Artista.Length > 0
+            || item.Titulo != Path.GetFileNameWithoutExtension(item.Caminho))
+            return false;
+
+        var vazias = new TagsMusica(string.Empty, string.Empty, string.Empty, 0, 0, string.Empty);
+        return EditorMetadados.SugerirPeloNome(item.Caminho, vazias) != vazias;
+    }
 
     // A música carregada no player fica com o arquivo aberto: é solta antes de gravar
     // e recarregada depois, na mesma posição e no mesmo estado (tocando ou pausada).

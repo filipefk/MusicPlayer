@@ -238,4 +238,29 @@
   <data name="MostrarNaFilaMusicaDica" xml:space="preserve">
     <value>Mostrar &quot;{0}&quot; en la cola</value>
   </data>
+  <data name="PreencherPeloNome" xml:space="preserve">
+    <value>Completar artista y título desde el nombre</value>
+  </data>
+  <data name="ConfirmarPreencherPeloNome" xml:space="preserve">
+    <value>Los archivos MP3 y M4A de la cola sin artista y sin título ({0}) tendrán esta información guardada a partir del nombre del archivo, cuando siga el patrón &quot;Artista - Título&quot; o &quot;Artista_Título&quot;.
+
+El nombre se divide en el primer &quot; - &quot; (guion con espacios) o, si no lo hay, en el primer &quot;-&quot; o &quot;_&quot;. Los archivos que no siguen el patrón no se modifican.
+
+¿Actualizar los archivos?</value>
+  </data>
+  <data name="PreencherPeloNomeNenhum" xml:space="preserve">
+    <value>Ningún archivo MP3 o M4A de la cola está sin artista y sin título con el nombre en el patrón &quot;Artista - Título&quot; o &quot;Artista_Título&quot;.</value>
+  </data>
+  <data name="PreenchendoPeloNome" xml:space="preserve">
+    <value>Actualizando {0} de {1}…</value>
+  </data>
+  <data name="PreencherPeloNomeResultado" xml:space="preserve">
+    <value>Artista y título completados en {0} archivo(s).</value>
+  </data>
+  <data name="PreencherPeloNomeResultadoErros" xml:space="preserve">
+    <value>Artista y título completados en {0} archivo(s); {1} no se pudieron actualizar.</value>
+  </data>
+  <data name="Atualizar" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
 </root>

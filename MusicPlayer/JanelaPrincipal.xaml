@@ -37,7 +37,7 @@
             Background="Transparent"
             DefaultLabelPosition="Right"
             IsDynamicOverflowEnabled="False"
-            OverflowButtonVisibility="Collapsed">
+            OverflowButtonVisibility="Auto">
             <AppBarToggleButton x:Name="abbPainelTocando" IsChecked="True" Click="abbPainelTocando_Click">
                 <AppBarToggleButton.Icon>
                     <FontIcon Glyph="&#xE8A0;" />
@@ -94,6 +94,14 @@
                     <KeyboardAccelerator Key="F1" />
                 </AppBarButton.KeyboardAccelerators>
             </AppBarButton>
+            <!-- Comandos pouco usados ficam no menu "Mais" (…). -->
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="abbPreencherPeloNome" IsEnabled="False" Click="abbPreencherPeloNome_Click">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE8AC;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
 
         <InfoBar

@@ -238,4 +238,29 @@
   <data name="MostrarNaFilaMusicaDica" xml:space="preserve">
     <value>Mostrar &quot;{0}&quot; na fila</value>
   </data>
+  <data name="PreencherPeloNome" xml:space="preserve">
+    <value>Preencher artista e título pelo nome</value>
+  </data>
+  <data name="ConfirmarPreencherPeloNome" xml:space="preserve">
+    <value>Os arquivos MP3 e M4A da fila sem artista e sem título ({0}) terão essas informações gravadas a partir do nome do arquivo, quando ele seguir o padrão &quot;Artista - Título&quot; ou &quot;Artista_Título&quot;.
+
+O nome é dividido no primeiro &quot; - &quot; (hífen com espaços) ou, se não houver, no primeiro &quot;-&quot; ou &quot;_&quot;. Arquivos fora do padrão não são alterados.
+
+Atualizar os arquivos?</value>
+  </data>
+  <data name="PreencherPeloNomeNenhum" xml:space="preserve">
+    <value>Nenhum arquivo MP3 ou M4A da fila está sem artista e sem título com o nome no padrão &quot;Artista - Título&quot; ou &quot;Artista_Título&quot;.</value>
+  </data>
+  <data name="PreenchendoPeloNome" xml:space="preserve">
+    <value>Atualizando {0} de {1}…</value>
+  </data>
+  <data name="PreencherPeloNomeResultado" xml:space="preserve">
+    <value>Artista e título preenchidos em {0} arquivo(s).</value>
+  </data>
+  <data name="PreencherPeloNomeResultadoErros" xml:space="preserve">
+    <value>Artista e título preenchidos em {0} arquivo(s); {1} não puderam ser atualizados.</value>
+  </data>
+  <data name="Atualizar" xml:space="preserve">
+    <value>Atualizar</value>
+  </data>
 </root>

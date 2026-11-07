@@ -192,7 +192,7 @@ public sealed partial class JanelaPrincipal : Window
     {
         // Só o que é barato a cada item; resumo (soma a fila toda) e filtro vão em lote.
         abbLimparFila.IsEnabled = _fila.Itens.Count > 0;
-        AtualizarBotaoEmbaralhar();
+        AtualizarBotoesOcupado();
         AtualizarPainelVazio();
         AgendarAtualizacaoFila();
     }
@@ -203,6 +203,7 @@ public sealed partial class JanelaPrincipal : Window
         txtResumoFila.Text = quantidade switch
         {
             0 => string.Empty,
+            _ when _preenchendo => Textos.Formatar("PreenchendoPeloNome", _concluidosPreenchimento, _totalPreenchimento),
             _ when EmCarga => Textos.Formatar("CarregandoFila", _concluidosCarga, _totalCarga),
             _ when FiltroAtivo => Textos.Formatar("ResumoFiltro", _itensFiltrados.Count, quantidade),
             1 => Textos.Formatar("ResumoFilaUma", FormatoTempo.Formatar(_fila.DuracaoTotal)),

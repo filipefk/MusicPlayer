@@ -187,8 +187,8 @@ public sealed partial class JanelaPrincipal
         AtualizarEstadoCarga();
     }
 
-    // Carga das tags ou embaralhamento em andamento: a pesquisa fica desabilitada.
-    private bool Ocupado => EmCarga || _embaralhando;
+    // Carga das tags, embaralhamento ou preenchimento pelo nome em andamento: a pesquisa fica desabilitada.
+    private bool Ocupado => EmCarga || _embaralhando || _preenchendo;
 
     private void AtualizarEstadoCarga()
     {
@@ -199,23 +199,32 @@ public sealed partial class JanelaPrincipal
 
         asbFiltro.IsEnabled = !ocupado;
         asbFiltro.PlaceholderText = Textos.Obter(ocupado ? "PesquisarAguarde" : "Pesquisar");
-        AtualizarBotaoEmbaralhar();
+        // Gravando as tags: a fila não muda de ordem nem perde itens no meio do caminho.
+        lvwFila.IsEnabled = !_preenchendo;
+        AtualizarBotoesOcupado();
 
         var emCarga = EmCarga;
-        prbCarga.Visibility = emCarga ? Visibility.Visible : Visibility.Collapsed;
-        if (emCarga)
+        prbCarga.Visibility = emCarga || _preenchendo ? Visibility.Visible : Visibility.Collapsed;
+        if (_preenchendo)
+        {
+            prbCarga.Maximum = Math.Max(1, _totalPreenchimento);
+            prbCarga.Value = _concluidosPreenchimento;
+        }
+        else if (emCarga)
         {
             prbCarga.Maximum = Math.Max(1, _totalCarga);
             prbCarga.Value = _concluidosCarga;
         }
-        else
-        {
+
+        if (!emCarga)
             _totalCarga = _concluidosCarga = 0;
-        }
     }
 
-    // Não desabilita durante o próprio embaralhamento (apagaria o ícone girando); cliques repetidos
-    // são ignorados em EmbaralharAsync.
-    private void AtualizarBotaoEmbaralhar() =>
-        abbEmbaralhar.IsEnabled = !EmCarga && _fila.Itens.Count > 1;
+    // O embaralhar não é desabilitado durante o próprio embaralhamento (apagaria o ícone girando);
+    // cliques repetidos são ignorados em EmbaralharAsync.
+    private void AtualizarBotoesOcupado()
+    {
+        abbEmbaralhar.IsEnabled = !EmCarga && !_preenchendo && _fila.Itens.Count > 1;
+        abbPreencherPeloNome.IsEnabled = !Ocupado && _fila.Itens.Count > 0;
+    }
 }

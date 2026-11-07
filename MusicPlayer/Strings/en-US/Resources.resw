@@ -238,4 +238,29 @@
   <data name="MostrarNaFilaMusicaDica" xml:space="preserve">
     <value>Show &quot;{0}&quot; in queue</value>
   </data>
+  <data name="PreencherPeloNome" xml:space="preserve">
+    <value>Fill in artist and title from file name</value>
+  </data>
+  <data name="ConfirmarPreencherPeloNome" xml:space="preserve">
+    <value>MP3 and M4A files in the queue with no artist and no title ({0}) will have this information saved from the file name, when it follows the pattern &quot;Artist - Title&quot; or &quot;Artist_Title&quot;.
+
+The name is split at the first &quot; - &quot; (hyphen with spaces) or, if there is none, at the first &quot;-&quot; or &quot;_&quot;. Files that don't follow the pattern are not changed.
+
+Update the files?</value>
+  </data>
+  <data name="PreencherPeloNomeNenhum" xml:space="preserve">
+    <value>No MP3 or M4A file in the queue is missing both artist and title with a name in the pattern &quot;Artist - Title&quot; or &quot;Artist_Title&quot;.</value>
+  </data>
+  <data name="PreenchendoPeloNome" xml:space="preserve">
+    <value>Updating {0} of {1}…</value>
+  </data>
+  <data name="PreencherPeloNomeResultado" xml:space="preserve">
+    <value>Artist and title filled in for {0} file(s).</value>
+  </data>
+  <data name="PreencherPeloNomeResultadoErros" xml:space="preserve">
+    <value>Artist and title filled in for {0} file(s); {1} could not be updated.</value>
+  </data>
+  <data name="Atualizar" xml:space="preserve">
+    <value>Update</value>
+  </data>
 </root>
