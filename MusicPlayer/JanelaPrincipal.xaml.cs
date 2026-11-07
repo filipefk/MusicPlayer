@@ -64,6 +64,7 @@ public sealed partial class JanelaPrincipal : Window
         ConfigurarArrastarSoltar();
         ConfigurarFiltro();
         ConfigurarCarga();
+        ConfigurarRolagem();
         // Espaço tocar/pausar em qualquer lugar da janela (antes de botões e da lista tratarem a tecla).
         grdRaiz.AddHandler(UIElement.PreviewKeyDownEvent, new KeyEventHandler(grdRaiz_PreviewKeyDown), true);
         grdCorpo.SizeChanged += (_, e) => AplicarLayout(e.NewSize.Width);
