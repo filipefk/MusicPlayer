@@ -169,8 +169,23 @@
   <data name="Embaralhar" xml:space="preserve">
     <value>Shuffle</value>
   </data>
-  <data name="EmbaralharDica" xml:space="preserve">
-    <value>Put the queue in random order (the current song moves to the top)</value>
+  <data name="Ordenar" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="OrdenarDica" xml:space="preserve">
+    <value>Sort or shuffle the songs in the queue</value>
+  </data>
+  <data name="OrdenarTitulo" xml:space="preserve">
+    <value>By title</value>
+  </data>
+  <data name="OrdenarArtista" xml:space="preserve">
+    <value>By artist</value>
+  </data>
+  <data name="OrdenarNomeArquivo" xml:space="preserve">
+    <value>By file name</value>
+  </data>
+  <data name="OrdenarPasta" xml:space="preserve">
+    <value>By folder</value>
   </data>
   <data name="PainelTocando" xml:space="preserve">
     <value>Cover</value>

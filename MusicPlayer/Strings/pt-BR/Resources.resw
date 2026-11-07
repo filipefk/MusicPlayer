@@ -169,8 +169,23 @@
   <data name="Embaralhar" xml:space="preserve">
     <value>Embaralhar</value>
   </data>
-  <data name="EmbaralharDica" xml:space="preserve">
-    <value>Colocar as músicas da fila em ordem aleatória (a atual vai para o início)</value>
+  <data name="Ordenar" xml:space="preserve">
+    <value>Ordenar</value>
+  </data>
+  <data name="OrdenarDica" xml:space="preserve">
+    <value>Ordenar ou embaralhar as músicas da fila</value>
+  </data>
+  <data name="OrdenarTitulo" xml:space="preserve">
+    <value>Por título</value>
+  </data>
+  <data name="OrdenarArtista" xml:space="preserve">
+    <value>Por artista</value>
+  </data>
+  <data name="OrdenarNomeArquivo" xml:space="preserve">
+    <value>Por nome do arquivo</value>
+  </data>
+  <data name="OrdenarPasta" xml:space="preserve">
+    <value>Por pasta</value>
   </data>
   <data name="PainelTocando" xml:space="preserve">
     <value>Capa</value>

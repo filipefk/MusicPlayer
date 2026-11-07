@@ -169,8 +169,23 @@
   <data name="Embaralhar" xml:space="preserve">
     <value>Mezclar</value>
   </data>
-  <data name="EmbaralharDica" xml:space="preserve">
-    <value>Poner las canciones de la cola en orden aleatorio (la actual pasa al principio)</value>
+  <data name="Ordenar" xml:space="preserve">
+    <value>Ordenar</value>
+  </data>
+  <data name="OrdenarDica" xml:space="preserve">
+    <value>Ordenar o mezclar las canciones de la cola</value>
+  </data>
+  <data name="OrdenarTitulo" xml:space="preserve">
+    <value>Por título</value>
+  </data>
+  <data name="OrdenarArtista" xml:space="preserve">
+    <value>Por artista</value>
+  </data>
+  <data name="OrdenarNomeArquivo" xml:space="preserve">
+    <value>Por nombre de archivo</value>
+  </data>
+  <data name="OrdenarPasta" xml:space="preserve">
+    <value>Por carpeta</value>
   </data>
   <data name="PainelTocando" xml:space="preserve">
     <value>Portada</value>

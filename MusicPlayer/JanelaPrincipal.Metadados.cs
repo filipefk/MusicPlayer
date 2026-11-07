@@ -139,7 +139,7 @@ public sealed partial class JanelaPrincipal
     private void abbPreencherPeloNome_Click(object sender, RoutedEventArgs e) => Disparar(PreencherPeloNomeAsync());
 
     // Aplica a sugestão do diálogo de edição a toda a fila: só arquivos editáveis sem título e sem artista
-    // cujo nome segue o padrão. Um arquivo por vez, com a lista, a pesquisa e o embaralhar desabilitados.
+    // cujo nome segue o padrão. Um arquivo por vez, com a lista, a pesquisa e o Ordenar desabilitados.
     private async Task PreencherPeloNomeAsync()
     {
         if (Ocupado)

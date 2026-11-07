@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Security.Cryptography;
 
 namespace MusicPlayer.Nucleo;
@@ -113,14 +114,39 @@ public sealed class FilaReproducao
         return new ResultadoRemocao(atualRemovido, seguinte);
     }
 
-    // Embaralhar em duas etapas, para o app aplicar aos poucos (com progresso): primeiro a ordem nova,
-    // com a música atual no topo e as demais em ordem aleatória; depois um MoverPara por item, na ordem.
-    // Move (e não Clear + Add) faz o ListView manter os itens e a seleção.
+    // Embaralhar e ordenar são feitos em duas etapas: primeiro a ordem nova (SortearOrdem ou OrdenarPor),
+    // depois um MoverPara por item, na ordem. Move (e não Clear + Add) faz o ListView manter os itens e a seleção.
+    // No embaralhar a música atual vai para o topo e as demais ficam em ordem aleatória.
     public IReadOnlyList<ItemFila> SortearOrdem()
     {
         var restantes = Itens.Where(i => !ReferenceEquals(i, Atual)).ToArray();
         RandomNumberGenerator.Shuffle(restantes.AsSpan());
         return Atual is null ? restantes : [Atual, .. restantes];
+    }
+
+    // Ordem crescente da fila inteira (a atual fica onde cair); os critérios seguintes desempatam.
+    public IReadOnlyList<ItemFila> OrdenarPor(CriterioOrdenacao criterio)
+    {
+        var comparador = ComparadorTexto.Instancia;
+        return criterio switch
+        {
+            CriterioOrdenacao.Titulo => [.. Itens
+                .OrderBy(i => i.Titulo, comparador)
+                .ThenBy(i => i.Artista, comparador)
+                .ThenBy(i => i.Caminho, comparador)],
+            CriterioOrdenacao.Artista => [.. Itens
+                .OrderBy(i => i.Artista, comparador)
+                .ThenBy(i => i.Album, comparador)
+                .ThenBy(i => i.NomeArquivo, comparador)
+                .ThenBy(i => i.Caminho, comparador)],
+            CriterioOrdenacao.NomeArquivo => [.. Itens
+                .OrderBy(i => i.NomeArquivo, comparador)
+                .ThenBy(i => i.Caminho, comparador)],
+            CriterioOrdenacao.Pasta => [.. Itens
+                .OrderBy(i => Path.GetDirectoryName(i.Caminho), comparador)
+                .ThenBy(i => i.NomeArquivo, comparador)],
+            _ => throw new ArgumentOutOfRangeException(nameof(criterio))
+        };
     }
 
     // false = o item saiu da fila (removido durante o embaralhamento).
@@ -140,5 +166,23 @@ public sealed class FilaReproducao
     {
         DefinirAtual(null);
         Itens.Clear();
+    }
+
+    // Sem maiúsculas nem acentos, com números em ordem natural ("2" antes de "10"); vazios por último.
+    private sealed class ComparadorTexto : IComparer<string?>
+    {
+        public static readonly ComparadorTexto Instancia = new();
+
+        private const CompareOptions Opcoes = CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace | CompareOptions.NumericOrdering;
+
+        public int Compare(string? x, string? y)
+        {
+            var xVazio = string.IsNullOrWhiteSpace(x);
+            var yVazio = string.IsNullOrWhiteSpace(y);
+            if (xVazio || yVazio)
+                return xVazio.CompareTo(yVazio);
+
+            return CultureInfo.CurrentCulture.CompareInfo.Compare(x, y, Opcoes);
+        }
     }
 }

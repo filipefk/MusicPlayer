@@ -16,14 +16,14 @@ namespace MusicPlayer;
 
 public sealed partial class JanelaPrincipal
 {
-    private const string GlifoEmbaralhar = "";
-    // Duas setas em círculo (Sync), girando enquanto embaralha.
-    private const string GlifoEmbaralhando = "";
+    private const string GlifoOrdenar = "";
+    // Duas setas em círculo (Sync), girando enquanto ordena ou embaralha.
+    private const string GlifoReordenando = "";
     private const string PropriedadeGiro = "RotationAngleInDegrees";
     // Uma volta; também é o tempo mínimo de giro, para não "piscar" em filas pequenas.
-    private static readonly TimeSpan DuracaoGiroEmbaralhar = TimeSpan.FromMilliseconds(700);
+    private static readonly TimeSpan DuracaoGiroReordenar = TimeSpan.FromMilliseconds(700);
 
-    private bool _embaralhando;
+    private bool _reordenando;
     private readonly MenuFlyout _mfoFila = new();
     private readonly MenuFlyoutItem _mfiTocar = new() { Icon = new FontIcon { Glyph = "" } };
     private readonly MenuFlyoutItem _mfiRemover = new() { Icon = new FontIcon { Glyph = "" } };
@@ -93,72 +93,80 @@ public sealed partial class JanelaPrincipal
             await AdicionarAoFimAsync([pasta.Path]);
     }
 
-    private void abbEmbaralhar_Click(object sender, RoutedEventArgs e) => Disparar(EmbaralharAsync());
+    private void mfiEmbaralhar_Click(object sender, RoutedEventArgs e) => Disparar(ReordenarAsync(_fila.SortearOrdem, rolarParaAtual: false));
+
+    private void mfiOrdenar_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: string tag } && Enum.TryParse<CriterioOrdenacao>(tag, out var criterio))
+            Disparar(ReordenarAsync(() => _fila.OrdenarPor(criterio), rolarParaAtual: true));
+    }
 
     // A ordem nova é aplicada de uma vez (a lista é desenhada uma vez só, sem piscar). Isso ocupa a
     // thread da interface, por isso o giro do ícone é uma animação do compositor, que segue sozinha.
-    private async Task EmbaralharAsync()
+    private async Task ReordenarAsync(Func<IReadOnlyList<ItemFila>> obterOrdem, bool rolarParaAtual)
     {
-        if (_embaralhando || _fila.Itens.Count < 2)
+        if (_reordenando || _fila.Itens.Count < 2)
             return;
 
-        _embaralhando = true;
+        _reordenando = true;
         var inicio = Stopwatch.StartNew();
         try
         {
-            // Desabilita a pesquisa (limpando-a, se ativa) enquanto embaralha.
+            // Desabilita a pesquisa (limpando-a, se ativa) enquanto reordena.
             AtualizarEstadoCarga();
-            var animado = IniciarGiroEmbaralhar();
+            var animado = IniciarGiroReordenar();
             // Dois quadros: o compositor recebe a animação antes de a thread ficar ocupada.
             await Task.Delay(TimeSpan.FromMilliseconds(32));
 
             var destino = 0;
-            foreach (var item in _fila.SortearOrdem())
+            foreach (var item in obterOrdem())
             {
                 if (_fila.MoverPara(item, destino))
                     destino++;
             }
-            if (_fila.Itens.Count > 0)
-                lvwFila.ScrollIntoView(_fila.Itens[0]);
+            // Ordenar: a música atual pode ter ido para qualquer lugar. Embaralhar: ela está no topo.
+            var alvo = (rolarParaAtual ? _fila.Atual : null) ?? _fila.Itens.FirstOrDefault();
+            if (alvo is not null)
+                lvwFila.ScrollIntoView(alvo);
 
-            var restante = DuracaoGiroEmbaralhar - inicio.Elapsed;
+            var restante = DuracaoGiroReordenar - inicio.Elapsed;
             if (animado && restante > TimeSpan.Zero)
                 await Task.Delay(restante);
         }
         finally
         {
-            PararGiroEmbaralhar();
-            _embaralhando = false;
+            PararGiroReordenar();
+            _reordenando = false;
             AtualizarEstadoCarga();
         }
     }
 
     // Com "Efeitos de animação" desligado no Windows, só troca o ícone.
-    private bool IniciarGiroEmbaralhar()
+    private bool IniciarGiroReordenar()
     {
-        fntEmbaralhar.Glyph = GlifoEmbaralhando;
+        fntOrdenar.Glyph = GlifoReordenando;
         if (!new UISettings().AnimationsEnabled)
             return false;
 
-        var visual = ElementCompositionPreview.GetElementVisual(fntEmbaralhar);
+        var visual = ElementCompositionPreview.GetElementVisual(fntOrdenar);
         var compositor = visual.Compositor;
         var giro = compositor.CreateScalarKeyFrameAnimation();
         giro.InsertKeyFrame(0f, 0f);
         giro.InsertKeyFrame(1f, 360f, compositor.CreateLinearEasingFunction());
-        giro.Duration = DuracaoGiroEmbaralhar;
+        giro.Duration = DuracaoGiroReordenar;
         giro.IterationBehavior = AnimationIterationBehavior.Forever;
 
-        visual.CenterPoint = new Vector3((float)(fntEmbaralhar.ActualWidth / 2), (float)(fntEmbaralhar.ActualHeight / 2), 0);
+        visual.CenterPoint = new Vector3((float)(fntOrdenar.ActualWidth / 2), (float)(fntOrdenar.ActualHeight / 2), 0);
         visual.StartAnimation(PropriedadeGiro, giro);
         return true;
     }
 
-    private void PararGiroEmbaralhar()
+    private void PararGiroReordenar()
     {
-        var visual = ElementCompositionPreview.GetElementVisual(fntEmbaralhar);
+        var visual = ElementCompositionPreview.GetElementVisual(fntOrdenar);
         visual.StopAnimation(PropriedadeGiro);
         visual.RotationAngleInDegrees = 0;
-        fntEmbaralhar.Glyph = GlifoEmbaralhar;
+        fntOrdenar.Glyph = GlifoOrdenar;
     }
 
     private void abbLimparFila_Click(object sender, RoutedEventArgs e) => Disparar(LimparFilaAsync());

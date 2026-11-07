@@ -7,7 +7,7 @@ namespace MusicPlayer;
 
 // Leitura das tags: alguns leitores trabalham sobre uma fila de pendentes, sempre começando pelo que
 // está visível na lista; pastas adicionadas também são lidas em lote pelo Windows (LerPastaAsync).
-// Enquanto houver pendentes, a pesquisa e o embaralhar ficam desabilitados.
+// Enquanto houver pendentes, a pesquisa e o Ordenar ficam desabilitados.
 public sealed partial class JanelaPrincipal
 {
     private const int LeiturasSimultaneasMetadados = 8;
@@ -187,8 +187,8 @@ public sealed partial class JanelaPrincipal
         AtualizarEstadoCarga();
     }
 
-    // Carga das tags, embaralhamento ou preenchimento pelo nome em andamento: a pesquisa fica desabilitada.
-    private bool Ocupado => EmCarga || _embaralhando || _preenchendo;
+    // Carga das tags, ordenação ou preenchimento pelo nome em andamento: a pesquisa fica desabilitada.
+    private bool Ocupado => EmCarga || _reordenando || _preenchendo;
 
     private void AtualizarEstadoCarga()
     {
@@ -220,11 +220,11 @@ public sealed partial class JanelaPrincipal
             _totalCarga = _concluidosCarga = 0;
     }
 
-    // O embaralhar não é desabilitado durante o próprio embaralhamento (apagaria o ícone girando);
-    // cliques repetidos são ignorados em EmbaralharAsync.
+    // O Ordenar não é desabilitado durante a própria ordenação ou embaralhamento (apagaria o ícone girando);
+    // cliques repetidos são ignorados em ReordenarAsync.
     private void AtualizarBotoesOcupado()
     {
-        abbEmbaralhar.IsEnabled = !EmCarga && !_preenchendo && _fila.Itens.Count > 1;
+        abbOrdenar.IsEnabled = !EmCarga && !_preenchendo && _fila.Itens.Count > 1;
         abbPreencherPeloNome.IsEnabled = !Ocupado && _fila.Itens.Count > 0;
     }
 }

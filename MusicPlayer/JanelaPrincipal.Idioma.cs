@@ -32,8 +32,13 @@ public sealed partial class JanelaPrincipal
         ToolTipService.SetToolTip(abbAdicionarArquivos, Textos.Obter("AdicionarArquivosDica"));
         abbAdicionarPasta.Label = Textos.Obter("AdicionarPasta");
         ToolTipService.SetToolTip(abbAdicionarPasta, Textos.Obter("AdicionarPastaDica"));
-        abbEmbaralhar.Label = Textos.Obter("Embaralhar");
-        ToolTipService.SetToolTip(abbEmbaralhar, Textos.Obter("EmbaralharDica"));
+        abbOrdenar.Label = Textos.Obter("Ordenar");
+        ToolTipService.SetToolTip(abbOrdenar, Textos.Obter("OrdenarDica"));
+        mfiOrdenarTitulo.Text = Textos.Obter("OrdenarTitulo");
+        mfiOrdenarArtista.Text = Textos.Obter("OrdenarArtista");
+        mfiOrdenarNomeArquivo.Text = Textos.Obter("OrdenarNomeArquivo");
+        mfiOrdenarPasta.Text = Textos.Obter("OrdenarPasta");
+        mfiEmbaralhar.Text = Textos.Obter("Embaralhar");
         abbLimparFila.Label = Textos.Obter("LimparFila");
         ToolTipService.SetToolTip(abbLimparFila, Textos.Obter("LimparFilaDica"));
         abbPreencherPeloNome.Label = Textos.Obter("PreencherPeloNome");

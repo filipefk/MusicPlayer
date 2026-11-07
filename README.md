@@ -9,11 +9,11 @@ Tocador de músicas para Windows 10/11 feito em **WinUI 3** (Windows App SDK) e 
 - **Duplo clique em uma música** abre o programa e toca. Com o programa já aberto, a **mesma janela** recebe o arquivo: ele entra logo depois da música atual e começa a tocar. Vários arquivos abertos juntos no Explorer entram em sequência.
 - **Fila de reprodução**: as músicas tocam na ordem da fila; ao terminar uma, começa a próxima.
 - **Arrastar e soltar** arquivos ou pastas do Explorer em qualquer ponto da janela: entram no fim da fila (pastas incluem as subpastas).
-- **Reordenar a fila** arrastando os itens com o mouse, ou **embaralhar** (a música atual vai para o início e as demais ficam em ordem aleatória).
+- **Reordenar a fila** arrastando os itens com o mouse, ou pelo botão **Ordenar**: por título, artista, nome do arquivo ou pasta (músicas da mesma pasta ficam por nome do arquivo), ou **embaralhar** (a música atual vai para o início e as demais ficam em ordem aleatória).
 - Botão **Capa** para mostrar ou ocultar o painel "Tocando agora" (a escolha é salva).
 - Tocar/pausar, anterior, próxima, barra de posição, volume e mudo, repetir (desligado / todas / esta música).
 - Título, artista, álbum, duração e capa lidos das tags do arquivo; integração com as **teclas de mídia** e o painel de mídia do Windows.
-- **Pesquisar na fila** enquanto digita (título, artista, álbum ou nome do arquivo, sem diferenciar maiúsculas nem acentos). A música atual fica sempre visível na barra de reprodução; clicar nela mostra a música na fila. A pesquisa e o embaralhar ficam disponíveis quando termina a leitura das informações das músicas.
+- **Pesquisar na fila** enquanto digita (título, artista, álbum, duração ou caminho completo do arquivo, sem diferenciar maiúsculas nem acentos). A música atual fica sempre visível na barra de reprodução; clicar nela mostra a música na fila. A pesquisa e o Ordenar ficam disponíveis quando termina a leitura das informações das músicas.
 - Menu de contexto da fila: tocar, editar informações, abrir local do arquivo e remover.
 - **Editar informações** de arquivos MP3 e M4A: título, artista, álbum, faixa, ano e gênero (gravados nas tags do próprio arquivo, pelo Windows).
 - A fila, a música atual e a posição são salvas ao fechar e restauradas ao abrir, já com as informações das músicas (só os arquivos alterados são lidos de novo).

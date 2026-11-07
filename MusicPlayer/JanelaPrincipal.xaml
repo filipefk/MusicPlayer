@@ -57,10 +57,41 @@
                     <FontIcon Glyph="&#xE838;" />
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="abbEmbaralhar" IsEnabled="False" Click="abbEmbaralhar_Click">
+            <AppBarButton x:Name="abbOrdenar" IsEnabled="False">
                 <AppBarButton.Icon>
-                    <FontIcon x:Name="fntEmbaralhar" Glyph="&#xE8B1;" />
+                    <FontIcon x:Name="fntOrdenar" Glyph="&#xE8CB;" />
                 </AppBarButton.Icon>
+                <AppBarButton.Flyout>
+                    <!-- Tag = CriterioOrdenacao. -->
+                    <MenuFlyout x:Name="mfoOrdenar" Placement="Bottom">
+                        <MenuFlyoutItem x:Name="mfiOrdenarTitulo" Tag="Titulo" Click="mfiOrdenar_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xE8D2;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Name="mfiOrdenarArtista" Tag="Artista" Click="mfiOrdenar_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xE77B;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Name="mfiOrdenarNomeArquivo" Tag="NomeArquivo" Click="mfiOrdenar_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xE8A5;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Name="mfiOrdenarPasta" Tag="Pasta" Click="mfiOrdenar_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xE8B7;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutSeparator />
+                        <MenuFlyoutItem x:Name="mfiEmbaralhar" Click="mfiEmbaralhar_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xE8B1;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </AppBarButton.Flyout>
             </AppBarButton>
             <AppBarButton x:Name="abbLimparFila" IsEnabled="False" Click="abbLimparFila_Click">
                 <AppBarButton.Icon>
