@@ -21,8 +21,14 @@ DisableProgramGroupPage=yes
 ChangesAssociations=yes
 
 [Files]
-; Copia todo o resultado do dotnet publish (inclui Assets e o Windows App SDK self-contained)
-Source: "..\bin\Publicar\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Copia o resultado do dotnet publish (inclui Assets e o Windows App SDK self-contained).
+; Das pastas de idioma do WinUI, só as dos idiomas do app (pt-BR, en-US, es-ES).
+Source: "..\bin\Publicar\*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\bin\Publicar\Assets\*"; DestDir: "{app}\Assets"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\bin\Publicar\Microsoft.UI.Xaml\*"; DestDir: "{app}\Microsoft.UI.Xaml"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\bin\Publicar\pt-BR\*"; DestDir: "{app}\pt-BR"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\bin\Publicar\en-US\*"; DestDir: "{app}\en-US"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\bin\Publicar\es-ES\*"; DestDir: "{app}\es-ES"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\Music Player"; Filename: "{app}\MusicPlayer.exe"

@@ -68,6 +68,7 @@ MusicPlayer/                 # app WinUI 3 não empacotado
 ## Instalador
 
 - Inno Setup (`iscc` no PATH): `MusicPlayer\Instalador\Instalador.iss` e `Release.cmd` (raiz): `dotnet publish` para `MusicPlayer\bin\Publicar` → apaga o `MusicPlayer-*.exe` anterior → `iscc`.
+- `[Files]` copia só o que está listado: arquivos da raiz do publish, `Assets`, `Microsoft.UI.Xaml` e as pastas de idioma do WinUI dos idiomas do app (`pt-BR`, `en-US`, `es-ES`); as demais pastas de idioma ficam de fora. Ao atualizar o Windows App SDK, conferir se o `bin\Publicar` ganhou alguma pasta nova que não seja de idioma e incluí-la no `.iss`. Ao adicionar um idioma ao app, incluir a pasta correspondente.
 - `AppId=Music Player` fixo (não alterar). Verifica o .NET 10 Runtime.
 - Registro (`HKA`): ProgID `MusicPlayer.Audio` (abrir = `"MusicPlayer.exe" "%1"`), `Applications\MusicPlayer.exe\SupportedTypes` e `OpenWithProgids` de cada extensão ("Abrir com"), verbo "Adicionar à fila do Music Player" em `SystemFileAssociations\audio\shell` (todo arquivo de áudio, com `--enfileirar`) e tarefa opcional para ser o padrão do `.mp3`. Como no MarkdownEditor, o Windows pergunta o app padrão no primeiro duplo clique (`UserChoice`); isso é esperado.
 - Antes de gerar, atualizar a versão no `Instalador.iss` (`AppVersion`, `OutputBaseFilename`), no `MusicPlayer.csproj` (`AssemblyVersion`, `FileVersion`, `InformationalVersion`) e no `app.manifest` (`X.Y.Z.0`).
