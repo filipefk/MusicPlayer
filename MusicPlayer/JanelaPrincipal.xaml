@@ -330,6 +330,8 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
+                <!-- Ocupa a coluna inteira para medir o espaço disponível (AplicarLarguraMusicaAtual). -->
+                <Grid x:Name="grdMusicaAtual">
                 <Button
                     x:Name="btnMusicaAtual"
                     Padding="4"
@@ -340,12 +342,13 @@
                     BorderThickness="0"
                     Visibility="Collapsed"
                     Click="btnMusicaAtual_Click">
-                    <Grid ColumnSpacing="12">
+                    <Grid x:Name="grdMiniConteudo" ColumnSpacing="12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid
+                            x:Name="grdMiniCapa"
                             Width="40"
                             Height="40"
                             Background="{ThemeResource ControlFillColorSecondaryBrush}"
@@ -357,16 +360,18 @@
                                 Glyph="&#xE8D6;" />
                             <Image x:Name="imgMiniCapa" Stretch="UniformToFill" Visibility="Collapsed" />
                         </Grid>
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock x:Name="txtMiniTitulo" TextTrimming="CharacterEllipsis" />
+                        <StackPanel x:Name="pnlMiniTextos" Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock x:Name="txtMiniTitulo" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
                             <TextBlock
                                 x:Name="txtMiniArtista"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                TextTrimming="CharacterEllipsis" />
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
                         </StackPanel>
                     </Grid>
                 </Button>
+                </Grid>
 
                 <StackPanel
                     Grid.Column="1"

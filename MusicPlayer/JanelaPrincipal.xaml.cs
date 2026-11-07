@@ -25,6 +25,9 @@ public sealed partial class JanelaPrincipal : Window
     private const double LarguraLayoutEmpilhado = 720;
     private const double LarguraColunaTocando = 320;
     private const double EspacoEntrePaineis = 8;
+    // Largura da coluna da música atual na barra inferior: abaixo da primeira some a capa; abaixo da segunda, tudo.
+    private const double LarguraMusicaAtualComCapa = 170;
+    private const double LarguraMusicaAtualSoTextos = 100;
 
     private readonly FilaReproducao _fila = new();
     // Guardada no construtor: a propriedade DispatcherQueue da janela só pode ser lida na thread da interface.
@@ -32,6 +35,8 @@ public sealed partial class JanelaPrincipal : Window
     private readonly ArgumentosAtivacao _argumentosIniciais;
     private bool? _layoutEmpilhado;
     private bool _painelTocandoVisivel = true;
+    private bool _temMusicaExibida;
+    private bool _musicaAtualCabe = true;
 
     public JanelaPrincipal(ArgumentosAtivacao argumentosIniciais)
     {
@@ -62,6 +67,7 @@ public sealed partial class JanelaPrincipal : Window
         // Espaço tocar/pausar em qualquer lugar da janela (antes de botões e da lista tratarem a tecla).
         grdRaiz.AddHandler(UIElement.PreviewKeyDownEvent, new KeyEventHandler(grdRaiz_PreviewKeyDown), true);
         grdCorpo.SizeChanged += (_, e) => AplicarLayout(e.NewSize.Width);
+        grdMusicaAtual.SizeChanged += (_, e) => AplicarLarguraMusicaAtual(e.NewSize.Width);
 
         AplicarIdioma();
         grdRaiz.Loaded += grdRaiz_Loaded;
@@ -132,6 +138,18 @@ public sealed partial class JanelaPrincipal : Window
             AlinharTextosTocando(HorizontalAlignment.Center, TextAlignment.Center);
         }
     }
+
+    private void AplicarLarguraMusicaAtual(double largura)
+    {
+        var comCapa = largura >= LarguraMusicaAtualComCapa;
+        grdMiniCapa.Visibility = comCapa ? Visibility.Visible : Visibility.Collapsed;
+        grdMiniConteudo.ColumnSpacing = comCapa ? 12 : 0;
+        _musicaAtualCabe = largura >= LarguraMusicaAtualSoTextos;
+        AtualizarVisibilidadeMusicaAtual();
+    }
+
+    private void AtualizarVisibilidadeMusicaAtual() =>
+        btnMusicaAtual.Visibility = _temMusicaExibida && _musicaAtualCabe ? Visibility.Visible : Visibility.Collapsed;
 
     // Oculto: o painel some e a fila ocupa todo o corpo, nos dois layouts (lado a lado ou empilhado).
     private void AplicarPainelTocando()

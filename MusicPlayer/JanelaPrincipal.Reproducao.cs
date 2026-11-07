@@ -364,7 +364,8 @@ public sealed partial class JanelaPrincipal
         txtArtista.Visibility = string.IsNullOrEmpty(txtArtista.Text) ? Visibility.Collapsed : Visibility.Visible;
         txtAlbum.Visibility = string.IsNullOrEmpty(txtAlbum.Text) ? Visibility.Collapsed : Visibility.Visible;
 
-        btnMusicaAtual.Visibility = item is null ? Visibility.Collapsed : Visibility.Visible;
+        _temMusicaExibida = item is not null;
+        AtualizarVisibilidadeMusicaAtual();
         txtMiniTitulo.Text = item?.Titulo ?? string.Empty;
         txtMiniArtista.Text = item?.Artista ?? string.Empty;
         txtMiniArtista.Visibility = txtArtista.Visibility;

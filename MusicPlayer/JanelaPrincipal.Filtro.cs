@@ -36,6 +36,8 @@ public sealed partial class JanelaPrincipal
             e.Handled = true;
         };
         grdRaiz.KeyboardAccelerators.Add(atalho);
+        // Sem isso o WinUI mostra "Ctrl+F" como dica ao passar o mouse sobre a janela.
+        grdRaiz.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
 
         asbFiltro.Loaded += (_, _) => AtualizarBotaoLimparFiltro();
     }
