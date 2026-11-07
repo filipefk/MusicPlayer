@@ -57,6 +57,8 @@ public sealed partial class JanelaPrincipal : Window
         ConfigurarAtivacao();
         ConfigurarMenuFila();
         ConfigurarArrastarSoltar();
+        ConfigurarFiltro();
+        ConfigurarCarga();
         // Espaço tocar/pausar em qualquer lugar da janela (antes de botões e da lista tratarem a tecla).
         grdRaiz.AddHandler(UIElement.PreviewKeyDownEvent, new KeyEventHandler(grdRaiz_PreviewKeyDown), true);
         grdCorpo.SizeChanged += (_, e) => AplicarLayout(e.NewSize.Width);
@@ -188,10 +190,11 @@ public sealed partial class JanelaPrincipal : Window
 
     private void Itens_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        AtualizarResumoFila();
+        // Só o que é barato a cada item; resumo (soma a fila toda) e filtro vão em lote.
         abbLimparFila.IsEnabled = _fila.Itens.Count > 0;
-        abbEmbaralhar.IsEnabled = _fila.Itens.Count > 1;
-        pnlFilaVazia.Visibility = _fila.Itens.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        abbEmbaralhar.IsEnabled = !EmCarga && _fila.Itens.Count > 1;
+        AtualizarPainelVazio();
+        AgendarAtualizacaoFila();
     }
 
     private void AtualizarResumoFila()
@@ -200,6 +203,8 @@ public sealed partial class JanelaPrincipal : Window
         txtResumoFila.Text = quantidade switch
         {
             0 => string.Empty,
+            _ when EmCarga => Textos.Formatar("CarregandoFila", _concluidosCarga, _totalCarga),
+            _ when FiltroAtivo => Textos.Formatar("ResumoFiltro", _itensFiltrados.Count, quantidade),
             1 => Textos.Formatar("ResumoFilaUma", FormatoTempo.Formatar(_fila.DuracaoTotal)),
             _ => Textos.Formatar("ResumoFila", quantidade, FormatoTempo.Formatar(_fila.DuracaoTotal))
         };
@@ -225,6 +230,8 @@ public sealed partial class JanelaPrincipal : Window
         SalvarEstado();
         EncerrarReproducao();
         _temporizadorAtivacao.Stop();
+        _temporizadorFiltro.Stop();
+        _temporizadorAtualizacao.Stop();
     }
 
     private void SalvarEstado()

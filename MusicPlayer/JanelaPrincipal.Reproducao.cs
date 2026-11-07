@@ -97,12 +97,24 @@ public sealed partial class JanelaPrincipal
     private async Task RestaurarFilaAsync()
     {
         var estado = EstadoFila.Carregar();
-        var atual = estado.IndiceAtual >= 0 && estado.IndiceAtual < estado.Arquivos.Count ? estado.Arquivos[estado.IndiceAtual] : null;
-        var existentes = await Task.Run(() => estado.Arquivos.Where(File.Exists).ToList());
+        var salvos = estado.Itens;
+        var atual = estado.IndiceAtual >= 0 && estado.IndiceAtual < salvos.Count ? salvos[estado.IndiceAtual].Caminho : null;
+        // Um acesso ao disco por arquivo: existe? e a data, que diz se as tags salvas ainda valem.
+        var existentes = await Task.Run(() => salvos
+            .Select(salvo => (Salvo: salvo, Arquivo: new FileInfo(salvo.Caminho)))
+            .Where(par => par.Arquivo.Exists)
+            .Select(par => (par.Salvo, Metadados: par.Salvo.ObterMetadadosValidos(par.Arquivo.LastWriteTimeUtc)))
+            .ToList());
         if (existentes.Count == 0)
             return;
 
-        var itens = _fila.Adicionar(existentes);
+        var itens = _fila.Adicionar(existentes.Select(par => par.Salvo.Caminho));
+        for (var i = 0; i < itens.Count; i++)
+        {
+            if (existentes[i].Metadados is { } metadados)
+                itens[i].AplicarMetadados(metadados);
+        }
+        // Só o que mudou desde a última sessão (ou nunca foi lido) passa pelos leitores.
         CarregarMetadados(itens);
 
         var itemAtual = atual is null ? null : itens.FirstOrDefault(i => string.Equals(i.Caminho, atual, StringComparison.OrdinalIgnoreCase));
@@ -115,10 +127,13 @@ public sealed partial class JanelaPrincipal
         var versao = ++_versaoCarga;
         _ocioso = false;
         _fila.DefinirAtual(item);
-        lvwFila.ScrollIntoView(item);
+        RolarAteItem(item);
 
         if (!item.MetadadosCarregados)
+        {
             item.AplicarMetadados(await LeitorMetadados.LerAsync(item.Caminho));
+            MarcarLidoForaDaCarga(item);
+        }
         if (versao != _versaoCarga)
             return;
         ExibirTocandoAgora(item);
@@ -307,9 +322,7 @@ public sealed partial class JanelaPrincipal
     {
         if (capa is null)
         {
-            imgCapa.Source = null;
-            imgCapa.Visibility = Visibility.Collapsed;
-            fntCapaPadrao.Visibility = Visibility.Visible;
+            MostrarImagemCapa(null);
             return;
         }
 
@@ -321,15 +334,24 @@ public sealed partial class JanelaPrincipal
             // Outra música pode ter sido carregada durante a leitura da imagem.
             if (!ReferenceEquals(capa, _capaAtual))
                 return;
-            imgCapa.Source = imagem;
-            imgCapa.Visibility = Visibility.Visible;
-            fntCapaPadrao.Visibility = Visibility.Collapsed;
+            MostrarImagemCapa(imagem);
         }
         catch (Exception ex)
         {
             Trace.TraceWarning(ex.Message);
-            imgCapa.Visibility = Visibility.Collapsed;
-            fntCapaPadrao.Visibility = Visibility.Visible;
+            MostrarImagemCapa(null);
+        }
+    }
+
+    // A mesma imagem vai para o painel "Tocando agora" e para a miniatura da barra de reprodução.
+    private void MostrarImagemCapa(BitmapImage? imagem)
+    {
+        var temImagem = imagem is not null;
+        foreach (var (img, glifo) in new[] { (imgCapa, fntCapaPadrao), (imgMiniCapa, fntMiniCapaPadrao) })
+        {
+            img.Source = imagem;
+            img.Visibility = temImagem ? Visibility.Visible : Visibility.Collapsed;
+            glifo.Visibility = temImagem ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 
@@ -340,6 +362,12 @@ public sealed partial class JanelaPrincipal
         txtAlbum.Text = item?.Album ?? string.Empty;
         txtArtista.Visibility = string.IsNullOrEmpty(txtArtista.Text) ? Visibility.Collapsed : Visibility.Visible;
         txtAlbum.Visibility = string.IsNullOrEmpty(txtAlbum.Text) ? Visibility.Collapsed : Visibility.Visible;
+
+        btnMusicaAtual.Visibility = item is null ? Visibility.Collapsed : Visibility.Visible;
+        txtMiniTitulo.Text = item?.Titulo ?? string.Empty;
+        txtMiniArtista.Text = item?.Artista ?? string.Empty;
+        txtMiniArtista.Visibility = txtArtista.Visibility;
+        DefinirDica(btnMusicaAtual, item is null ? Textos.Obter("MostrarNaFilaDica") : Textos.Formatar("MostrarNaFilaMusicaDica", item.Titulo));
         AtualizarTitulo();
     }
 

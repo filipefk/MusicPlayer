@@ -13,9 +13,10 @@ Tocador de músicas para Windows 10/11 feito em **WinUI 3** (Windows App SDK) e 
 - Botão **Capa** para mostrar ou ocultar o painel "Tocando agora" (a escolha é salva).
 - Tocar/pausar, anterior, próxima, barra de posição, volume e mudo, repetir (desligado / todas / esta música).
 - Título, artista, álbum, duração e capa lidos das tags do arquivo; integração com as **teclas de mídia** e o painel de mídia do Windows.
+- **Pesquisar na fila** enquanto digita (título, artista, álbum ou nome do arquivo, sem diferenciar maiúsculas nem acentos). A música atual fica sempre visível na barra de reprodução; clicar nela mostra a música na fila. A pesquisa e o embaralhar ficam disponíveis quando termina a leitura das informações das músicas.
 - Menu de contexto da fila: tocar, editar informações, abrir local do arquivo e remover.
 - **Editar informações** de arquivos MP3 e M4A: título, artista, álbum, faixa, ano e gênero (gravados nas tags do próprio arquivo, pelo Windows).
-- A fila, a música atual e a posição são salvas ao fechar e restauradas ao abrir.
+- A fila, a música atual e a posição são salvas ao fechar e restauradas ao abrir, já com as informações das músicas (só os arquivos alterados são lidos de novo).
 - Interface em português, inglês e espanhol (menu Idioma).
 - Verbo "Adicionar à fila do Music Player" no menu de contexto do Explorer (instalado pelo instalador).
 
@@ -30,6 +31,7 @@ Tocador de músicas para Windows 10/11 feito em **WinUI 3** (Windows App SDK) e 
 | Espaço | Tocar / pausar |
 | Ctrl+→ / Ctrl+← | Próxima / anterior |
 | Ctrl+O | Adicionar arquivos |
+| Ctrl+F | Pesquisar na fila (Esc limpa) |
 | Enter | Tocar a música selecionada |
 | Delete | Remover as selecionadas da fila |
 | F1 | Sobre |

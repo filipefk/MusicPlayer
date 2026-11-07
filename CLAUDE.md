@@ -11,20 +11,21 @@ Tocador de músicas **WinUI 3** (Windows App SDK 2.x, `net10.0-windows10.0.26100
 ```
 MusicPlayer.Nucleo/          # biblioteca sem WinUI: regras da fila, formatos, metadados, preferências
 ├── FilaReproducao.cs        # ObservableCollection<ItemFila> + Atual (por referência) + próximo/anterior/remoção
+├── FiltroFila.cs            # filtro da fila: todas as palavras em título/artista/álbum/arquivo, sem maiúsculas nem acentos
 ├── ItemFila.cs              # ObservableObject (CommunityToolkit.Mvvm, propriedades partial)
 ├── ModoRepeticao.cs         # Desligado, Todas, Uma
 ├── FormatosAudio.cs         # extensões suportadas (manter igual ao Instalador.iss)
 ├── ExpansorCaminhos.cs      # arquivos + pastas (recursivo) → lista de músicas
-├── LeitorMetadados.cs       # tags pelo Windows (StorageFile.Properties.GetMusicPropertiesAsync)
+├── LeitorMetadados.cs       # tags pelo Windows: arquivo a arquivo (GetMusicPropertiesAsync) ou pasta inteira em lote (LerPastaAsync, prefetch)
 ├── EditorMetadados.cs       # lê e grava TagsMusica (MusicProperties.SavePropertiesAsync), só .mp3 e .m4a
 ├── ArgumentosAtivacao.cs    # linha de comando: [--enfileirar] <arquivos/pastas>
 ├── Configuracoes.cs         # %LocalAppData%\MusicPlayer\configuracoes.json (idioma, volume, mudo, repetição, painel da capa)
-├── EstadoFila.cs            # %LocalAppData%\MusicPlayer\fila.json (fila, item atual e posição)
-└── FormatoTempo.cs, MetadadosMusica.cs, TagsMusica.cs, ResultadoRemocao.cs, PastasAplicativo.cs, ContextoJson.cs
+├── EstadoFila.cs            # %LocalAppData%\MusicPlayer\fila.json (fila com as tags em MusicaSalva, item atual e posição)
+└── FormatoTempo.cs, MetadadosMusica.cs, MusicaSalva.cs, TagsMusica.cs, ResultadoRemocao.cs, PastasAplicativo.cs, ContextoJson.cs
 MusicPlayer/                 # app WinUI 3 não empacotado
 ├── Program.cs               # Main próprio (DISABLE_XAML_GENERATED_MAIN): instância única
 ├── App.xaml(.cs)            # idioma, exceções não tratadas, repassa ativações para a janela
-├── JanelaPrincipal.xaml(.cs) e partials .Reproducao, .Fila, .ArrastarSoltar, .Ativacao, .Dialogos, .Metadados, .Sobre, .Idioma
+├── JanelaPrincipal.xaml(.cs) e partials .Reproducao, .Fila, .Filtro, .Carga, .ArrastarSoltar, .Ativacao, .Dialogos, .Metadados, .Sobre, .Idioma
 ├── Textos.cs                # textos de Strings\<idioma>\Resources.resw
 ├── LinhaComando.cs, NativeMethods.cs
 └── Instalador/Instalador.iss
@@ -40,16 +41,19 @@ MusicPlayer/                 # app WinUI 3 não empacotado
 - **Barra de posição**: atualizada por `DispatcherQueueTimer` (250 ms). O `Slider` trata o ponteiro, então `PointerPressed/Released/CaptureLost` são registrados com `handledEventsToo`; durante o arraste só o tempo exibido muda, e a busca acontece ao soltar.
 - **Capa**: `GetThumbnailAsync(ThumbnailMode.MusicView)`; quando o tipo não é `Image` (o Windows devolve o ícone do arquivo), mostra o glifo padrão. A miniatura fica viva em `_capaAtual` porque o SMTC lê o stream depois.
 - **Edição de tags** (`JanelaPrincipal.Metadados.cs`, menu de contexto da fila "Editar informações..."): título, artista, álbum, faixa, ano e gênero, gravados pelo property handler do Windows (sem bibliotecas de terceiros; a capa não é editável por essa API). Só `.mp3` e `.m4a` (`EditorMetadados.PodeEditar`), onde a gravação é garantida. Se for a música carregada, o `MediaPlayer` mantém o arquivo aberto: a fonte é solta antes de gravar (`SalvarAsync` repete em caso de violação de compartilhamento) e recarregada na mesma posição e estado, preservando `_ocioso`. Depois de gravar, o `ItemFila` relê as tags pelo `LeitorMetadados`; título vazio volta ao nome do arquivo.
+- **Carga das tags** (`JanelaPrincipal.Carga.cs`): 8 leitores (`LeiturasSimultaneasMetadados`) consomem `_pendentes`, sempre começando pelo que está visível (`FirstVisibleIndex..LastVisibleIndex` do `ItemsStackPanel`); pastas adicionadas também são lidas em lote por `LeitorMetadados.LerPastaAsync` (consulta do Windows com `SetPropertyPrefetch`, usa o índice quando há). Resumo, filtro e progresso são atualizados por um temporizador de 200 ms que limita a frequência sem adiar (`AgendarAtualizacaoFila`), nunca a cada item (`DuracaoTotal` soma a fila inteira). Enquanto `EmCarga`, a pesquisa (limpa se estava ativa) e o embaralhar ficam desabilitados, com `prbCarga` e "Carregando X de Y" no resumo. Tags lidas fora dos leitores (tocar, editar) saem dos pendentes por `MarcarLidoForaDaCarga`; limpar a fila incrementa `_geracaoCarga`.
+- **Filtro** (`JanelaPrincipal.Filtro.cs`, `asbFiltro` no cartão da fila): filtra enquanto digita (`DispatcherQueueTimer` de 150 ms; mudanças na fila e nas tags reaplicam pelo lote da carga). Com filtro, o `lvwFila` mostra `_itensFiltrados`, sincronizada por Move/Insert/Remove (sem recriar itens nem perder a seleção), e a reordenação fica desligada; a fila real não muda (próximo/anterior seguem a ordem completa). `RolarAteItem` só rola se o item está visível. Esc limpa; ao voltar à fila completa, a música atual fica selecionada e à vista. Resumo "X de Y" e `pnlFilaVazia` com texto próprio quando nada corresponde.
+- **Música atual na barra** (`btnMusicaAtual`, padrão do Media Player do Windows 11): miniatura, título e artista à esquerda dos botões de transporte, preenchidos em `ExibirTocandoAgora`; a capa é a mesma `BitmapImage` do painel (`MostrarImagemCapa`). Clicar seleciona e rola até a música, limpando o filtro se ela estiver escondida.
 - **Arrastar e soltar** (`JanelaPrincipal.ArrastarSoltar.cs`): `DragOver`/`Drop` no `grdRaiz` com `handledEventsToo` (o `ListView` marca o arraste como tratado). Só `StandardDataFormats.StorageItems` é aceito, o que separa arquivos do Explorer do arraste interno de reordenação. Pastas são expandidas (`ExpansorCaminhos`, em `Task.Run`).
 - **Layout**: duas colunas (Tocando agora | Fila); abaixo de `LarguraLayoutEmpilhado` o `AplicarLayout` (no `SizeChanged` do `grdCorpo`) empilha e reduz a capa. Feito em código porque `AdaptiveTrigger` em `Window` não é confiável. `AplicarPainelTocando` (botão `abbPainelTocando`) oculta o painel da capa e zera a coluna e os espaçamentos. Na segunda linha da fila, dois `Run`: `ItemFila.PrefixoSubtitulo` (artista · álbum, quando houver) e o `Caminho` completo, sempre por último e mais apagado (`TextFillColorDisabledBrush`).
-- **Teclado**: Espaço é tratado no `PreviewKeyDown` do `grdRaiz` (antes de botões e da lista), exceto quando o foco está num campo de texto ou fora da árvore do `grdRaiz` (diálogos e menus ficam na camada de popups, mas a tecla também passa por ali) — `EspacoEhDoPlayer`; Ctrl+←/→ e Ctrl+O por `KeyboardAccelerator`; Enter/Delete no `KeyDown` do `lvwFila`.
-- **Persistência**: no `Closed` salva `Configuracoes` (volume, mudo, repetição, painel da capa) e `EstadoFila`. Arquivos que não existem mais são ignorados na restauração.
+- **Teclado**: Espaço é tratado no `PreviewKeyDown` do `grdRaiz` (antes de botões e da lista), exceto quando o foco está num campo de texto ou fora da árvore do `grdRaiz` (diálogos e menus ficam na camada de popups, mas a tecla também passa por ali) — `EspacoEhDoPlayer`; Ctrl+←/→, Ctrl+O e Ctrl+F (no `grdRaiz`, foca o filtro) por `KeyboardAccelerator`; Enter/Delete no `KeyDown` do `lvwFila`.
+- **Persistência**: no `Closed` salva `Configuracoes` (volume, mudo, repetição, painel da capa) e `EstadoFila`. A fila guarda as tags e a data do arquivo (`MusicaSalva`, `File.GetLastWriteTimeUtc` lido junto com as tags); na restauração, arquivos inalterados voltam com as tags salvas e só os demais passam pelos leitores. Arquivos que não existem mais são ignorados; o formato antigo (`arquivos`, só caminhos) ainda é lido.
 - **Idioma**: igual ao MarkdownEditor — `Textos` (ResourceManager do MRT Core com contexto próprio; troca vale na hora), `App.DefinirIdiomaDoWinUI` (`PrimaryLanguageOverride`), menu `abbIdioma` com `RadioMenuFlyoutItem`, `AplicarIdioma()` no construtor e a cada troca. Botões só com ícone usam `DefinirDica` (tooltip + `AutomationProperties.Name`).
 
 ## Convenções
 
 - Nomes de variáveis, métodos e controles em português. Textos de interface sempre por `Textos.Obter`/`Textos.Formatar`, com a chave nos três `Resources.resw` (pt-BR, en-US, es-ES); nunca texto fixo no C# ou no XAML (exceção: nomes dos idiomas no menu Idioma).
-- Prefixos de controles: `tlb` (TitleBar), `cbr` (CommandBar), `abb` (AppBarButton), `btn` (Button), `sld` (Slider), `lvw` (ListView), `txt` (TextBlock), `txb` (TextBox), `nmb` (NumberBox), `img` (Image), `fnt` (FontIcon), `ifb` (InfoBar), `grd` (Grid), `brd` (Border), `pnl` (StackPanel), `col`/`row` (definições do Grid), `mfo`/`mfi` (MenuFlyout/Item), `rmi` (RadioMenuFlyoutItem).
+- Prefixos de controles: `tlb` (TitleBar), `cbr` (CommandBar), `abb` (AppBarButton), `btn` (Button), `sld` (Slider), `lvw` (ListView), `txt` (TextBlock), `txb` (TextBox), `asb` (AutoSuggestBox), `prb` (ProgressBar), `nmb` (NumberBox), `img` (Image), `fnt` (FontIcon), `ifb` (InfoBar), `grd` (Grid), `brd` (Border), `pnl` (StackPanel), `col`/`row` (definições do Grid), `mfo`/`mfi` (MenuFlyout/Item), `rmi` (RadioMenuFlyoutItem).
 - C# moderno: file-scoped namespaces, primary constructors/records, collection expressions, pattern matching.
 - Cores só por `ThemeResource`; glifos da Segoe Fluent Icons. Estilos compartilhados em `App.xaml` (`CartaoStyle`, `BotaoTransporteStyle`, `BotaoTocarStyle`).
 - `async void` só em event handlers; tarefas disparadas de outros pontos passam por `Disparar(tarefa)` (a exceção chega ao `Application.UnhandledException`).

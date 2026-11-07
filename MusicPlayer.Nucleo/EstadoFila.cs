@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MusicPlayer.Nucleo;
 
@@ -8,7 +9,13 @@ public sealed class EstadoFila
 {
     private static string Arquivo => Path.Combine(PastasAplicativo.Dados, "fila.json");
 
-    public IReadOnlyList<string> Arquivos { get; init; } = [];
+    // Tags junto com o caminho: a fila restaurada aparece pronta, sem reler cada arquivo.
+    // O gerador do System.Text.Json passa null para propriedades init ausentes no JSON (formato antigo).
+    public IReadOnlyList<MusicaSalva> Itens { get; init => field = value ?? []; } = [];
+
+    // Formato antigo (só caminhos): lido para converter em Itens, nunca gravado.
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyList<string>? Arquivos { get; init; }
 
     // -1 = nenhum item atual.
     public int IndiceAtual { get; init; } = -1;
@@ -21,7 +28,7 @@ public sealed class EstadoFila
 
         return new EstadoFila
         {
-            Arquivos = fila.Itens.Select(i => i.Caminho).ToList(),
+            Itens = fila.Itens.Select(MusicaSalva.De).ToList(),
             IndiceAtual = fila.IndiceAtual,
             PosicaoSegundos = fila.Atual is null ? 0 : Math.Max(0, posicao.TotalSeconds)
         };
@@ -36,7 +43,7 @@ public sealed class EstadoFila
         try
         {
             if (File.Exists(arquivo))
-                return JsonSerializer.Deserialize(File.ReadAllText(arquivo), ContextoJson.Default.EstadoFila) ?? new EstadoFila();
+                return Converter(JsonSerializer.Deserialize(File.ReadAllText(arquivo), ContextoJson.Default.EstadoFila));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or NotSupportedException)
         {
@@ -45,6 +52,18 @@ public sealed class EstadoFila
 
         return new EstadoFila();
     }
+
+    private static EstadoFila Converter(EstadoFila? estado) => estado switch
+    {
+        null => new EstadoFila(),
+        { Itens.Count: 0, Arquivos: { Count: > 0 } arquivos } => new EstadoFila
+        {
+            Itens = arquivos.Select(a => new MusicaSalva(a, null, null, null, 0, null)).ToList(),
+            IndiceAtual = estado.IndiceAtual,
+            PosicaoSegundos = estado.PosicaoSegundos
+        },
+        _ => estado
+    };
 
     internal void Salvar(string arquivo)
     {

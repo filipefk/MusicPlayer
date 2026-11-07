@@ -12,10 +12,6 @@ namespace MusicPlayer;
 
 public sealed partial class JanelaPrincipal
 {
-    // Leitura das tags em paralelo, sem abrir centenas de arquivos ao mesmo tempo.
-    private const int LeiturasSimultaneasMetadados = 4;
-
-    private readonly SemaphoreSlim _limiteMetadados = new(LeiturasSimultaneasMetadados);
     private readonly MenuFlyout _mfoFila = new();
     private readonly MenuFlyoutItem _mfiTocar = new() { Icon = new FontIcon { Glyph = "" } };
     private readonly MenuFlyoutItem _mfiRemover = new() { Icon = new FontIcon { Glyph = "" } };
@@ -38,8 +34,7 @@ public sealed partial class JanelaPrincipal
     // Itens adicionados pelo usuário (botões ou arrastar): sempre no fim da fila.
     private async Task AdicionarAoFimAsync(IEnumerable<string> caminhos)
     {
-        var lista = caminhos.ToList();
-        var arquivos = await Task.Run(() => ExpansorCaminhos.Expandir(lista));
+        var (arquivos, pastas) = await ExpandirAsync(caminhos);
         if (arquivos.Count == 0)
         {
             MostrarAviso(Textos.Obter("NenhumArquivoSuportado"));
@@ -47,35 +42,16 @@ public sealed partial class JanelaPrincipal
         }
 
         var novos = _fila.Adicionar(arquivos);
-        CarregarMetadados(novos);
+        CarregarMetadados(novos, pastas);
         if (_ocioso)
             await TocarAsync(novos[0]);
     }
 
-    private void CarregarMetadados(IEnumerable<ItemFila> itens)
+    // As pastas voltam à parte para a leitura das tags em lote (LerPastaAsync).
+    private static Task<(IReadOnlyList<string> Arquivos, List<string> Pastas)> ExpandirAsync(IEnumerable<string> caminhos)
     {
-        foreach (var item in itens)
-            Disparar(CarregarMetadadosAsync(item));
-    }
-
-    private async Task CarregarMetadadosAsync(ItemFila item)
-    {
-        await _limiteMetadados.WaitAsync();
-        try
-        {
-            if (item.MetadadosCarregados)
-                return;
-
-            item.AplicarMetadados(await LeitorMetadados.LerAsync(item.Caminho));
-        }
-        finally
-        {
-            _limiteMetadados.Release();
-        }
-
-        AtualizarResumoFila();
-        if (ReferenceEquals(item, _fila.Atual))
-            ExibirTocandoAgora(item);
+        var lista = caminhos.ToList();
+        return Task.Run(() => (ExpansorCaminhos.Expandir(lista), lista.Where(Directory.Exists).ToList()));
     }
 
     private async void abbAdicionarArquivos_Click(object sender, RoutedEventArgs e)
@@ -104,8 +80,12 @@ public sealed partial class JanelaPrincipal
     private void abbEmbaralhar_Click(object sender, RoutedEventArgs e)
     {
         _fila.Embaralhar();
-        if (_fila.Itens.Count > 0)
-            lvwFila.ScrollIntoView(_fila.Itens[0]);
+        // Com filtro, a lista visível só é reordenada no próximo AplicarFiltro: aplica já para rolar ao topo certo.
+        if (FiltroAtivo)
+            AplicarFiltro();
+        var visiveis = FiltroAtivo ? _itensFiltrados : _fila.Itens;
+        if (visiveis.Count > 0)
+            lvwFila.ScrollIntoView(visiveis[0]);
     }
 
     private async void abbLimparFila_Click(object sender, RoutedEventArgs e)
@@ -114,6 +94,7 @@ public sealed partial class JanelaPrincipal
             return;
 
         PararEDescarregar();
+        CancelarCarga();
         _fila.Limpar();
     }
 

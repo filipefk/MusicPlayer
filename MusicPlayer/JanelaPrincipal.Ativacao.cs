@@ -47,11 +47,11 @@ public sealed partial class JanelaPrincipal
 
         if (paraTocar.Count > 0)
         {
-            var arquivos = await Task.Run(() => ExpansorCaminhos.Expandir(paraTocar));
+            var (arquivos, pastas) = await ExpandirAsync(paraTocar);
             if (arquivos.Count > 0)
             {
                 var novos = _fila.InserirAposAtual(arquivos);
-                CarregarMetadados(novos);
+                CarregarMetadados(novos, pastas);
                 await TocarAsync(novos[0]);
             }
         }

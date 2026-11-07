@@ -38,6 +38,8 @@ public sealed partial class ItemFila : ObservableObject
 
     public bool MetadadosCarregados { get; private set; }
 
+    public DateTime? ModificadoUtc { get; private set; }
+
     // Início da segunda linha: artista e álbum (quando houver) já com o separador; o caminho vem depois, com outra cor.
     public string PrefixoSubtitulo
     {
@@ -55,6 +57,8 @@ public sealed partial class ItemFila : ObservableObject
         MetadadosCarregados = true;
         if (metadados is null)
             return;
+
+        ModificadoUtc = metadados.ModificadoUtc;
 
         // Sem título (inclusive apagado na edição das tags): volta ao nome do arquivo.
         Titulo = string.IsNullOrWhiteSpace(metadados.Titulo) ? Path.GetFileNameWithoutExtension(Caminho) : metadados.Titulo.Trim();

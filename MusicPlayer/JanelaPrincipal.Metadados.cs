@@ -148,7 +148,8 @@ public sealed partial class JanelaPrincipal
 
         var erro = await EditorMetadados.SalvarAsync(item.Caminho, tags);
         item.AplicarMetadados(await LeitorMetadados.LerAsync(item.Caminho));
-        AtualizarResumoFila();
+        MarcarLidoForaDaCarga(item);
+        AgendarAtualizacaoFila();
 
         // Outra música pedida durante a gravação (teclas de mídia, duplo clique...): fica a escolha do usuário.
         if (recarregar && versao == _versaoCarga)

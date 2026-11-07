@@ -48,7 +48,9 @@ public sealed partial class JanelaPrincipal
         ToolTipService.SetToolTip(abbSobre, Textos.Obter("SobreDica"));
 
         txtTituloFila.Text = Textos.Obter("Fila");
-        txtFilaVazia.Text = Textos.Obter("FilaVazia");
+        AtualizarEstadoCarga();
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(asbFiltro, Textos.Obter("Pesquisar"));
+        AtualizarPainelVazio();
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(lvwFila, Textos.Obter("Fila"));
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(sldPosicao, Textos.Obter("Posicao"));
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(sldVolume, Textos.Obter("Volume"));

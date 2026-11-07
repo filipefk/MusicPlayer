@@ -166,6 +166,7 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
@@ -183,10 +184,22 @@
                             Style="{StaticResource CaptionTextBlockStyle}" />
                     </Grid>
 
+                    <!-- Filtra enquanto digita (JanelaPrincipal.Filtro.cs); Ctrl+F foca, Esc limpa. -->
+                    <AutoSuggestBox
+                        x:Name="asbFiltro"
+                        Grid.Row="1"
+                        Margin="16,0,16,8"
+                        KeyDown="asbFiltro_KeyDown"
+                        TextChanged="asbFiltro_TextChanged">
+                        <AutoSuggestBox.QueryIcon>
+                            <SymbolIcon Symbol="Find" />
+                        </AutoSuggestBox.QueryIcon>
+                    </AutoSuggestBox>
+
                     <!-- Reordenar arrastando: o ListView move o item na ObservableCollection da fila. -->
                     <ListView
                         x:Name="lvwFila"
-                        Grid.Row="1"
+                        Grid.Row="2"
                         Padding="0,0,0,8"
                         AllowDrop="True"
                         CanDragItems="True"
@@ -231,12 +244,12 @@
 
                     <StackPanel
                         x:Name="pnlFilaVazia"
-                        Grid.Row="1"
+                        Grid.Row="2"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         IsHitTestVisible="False"
                         Spacing="12">
-                        <FontIcon FontSize="40" Foreground="{ThemeResource TextFillColorTertiaryBrush}" Glyph="&#xE896;" />
+                        <FontIcon x:Name="fntFilaVazia" FontSize="40" Foreground="{ThemeResource TextFillColorTertiaryBrush}" Glyph="&#xE896;" />
                         <TextBlock
                             x:Name="txtFilaVazia"
                             MaxWidth="280"
@@ -244,6 +257,15 @@
                             HorizontalTextAlignment="Center"
                             TextWrapping="Wrap" />
                     </StackPanel>
+
+                    <!-- Leitura das tags em andamento (JanelaPrincipal.Carga.cs); sobreposta para não mover a lista. -->
+                    <ProgressBar
+                        x:Name="prbCarga"
+                        Grid.Row="2"
+                        Margin="16,0"
+                        VerticalAlignment="Top"
+                        IsHitTestVisible="False"
+                        Visibility="Collapsed" />
                 </Grid>
             </Border>
         </Grid>
@@ -292,50 +314,96 @@
                     Text="0:00" />
             </Grid>
 
-            <StackPanel
-                Grid.Row="1"
-                HorizontalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="8">
-                <Button x:Name="btnRepetir" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnRepetir_Click">
-                    <FontIcon x:Name="fntRepetir" FontSize="16" Glyph="&#xE8EE;" />
+            <!-- Colunas laterais iguais: os botões ficam centralizados e a música atual à esquerda (como no Media Player). -->
+            <Grid Grid.Row="1" ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    x:Name="btnMusicaAtual"
+                    Padding="4"
+                    HorizontalAlignment="Left"
+                    HorizontalContentAlignment="Left"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Visibility="Collapsed"
+                    Click="btnMusicaAtual_Click">
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid
+                            Width="40"
+                            Height="40"
+                            Background="{ThemeResource ControlFillColorSecondaryBrush}"
+                            CornerRadius="{ThemeResource ControlCornerRadius}">
+                            <FontIcon
+                                x:Name="fntMiniCapaPadrao"
+                                FontSize="18"
+                                Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                Glyph="&#xE8D6;" />
+                            <Image x:Name="imgMiniCapa" Stretch="UniformToFill" Visibility="Collapsed" />
+                        </Grid>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock x:Name="txtMiniTitulo" TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                x:Name="txtMiniArtista"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </Grid>
                 </Button>
-                <Button x:Name="btnAnterior" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnAnterior_Click">
-                    <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Left" Modifiers="Control" />
-                    </Button.KeyboardAccelerators>
-                    <FontIcon FontSize="16" Glyph="&#xE892;" />
-                </Button>
-                <Button x:Name="btnTocarPausar" VerticalAlignment="Center" Style="{StaticResource BotaoTocarStyle}" Click="btnTocarPausar_Click">
-                    <FontIcon x:Name="fntTocarPausar" FontSize="20" Glyph="&#xE768;" />
-                </Button>
-                <Button x:Name="btnProximo" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnProximo_Click">
-                    <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Right" Modifiers="Control" />
-                    </Button.KeyboardAccelerators>
-                    <FontIcon FontSize="16" Glyph="&#xE893;" />
-                </Button>
-                <Button x:Name="btnVolume" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}">
-                    <FontIcon x:Name="fntVolume" FontSize="16" Glyph="&#xE767;" />
-                    <Button.Flyout>
-                        <Flyout Placement="Top">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <Button x:Name="btnMudo" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnMudo_Click">
-                                    <FontIcon x:Name="fntMudo" FontSize="16" Glyph="&#xE74F;" />
-                                </Button>
-                                <Slider
-                                    x:Name="sldVolume"
-                                    Width="200"
-                                    VerticalAlignment="Center"
-                                    Maximum="100"
-                                    Minimum="0"
-                                    StepFrequency="1"
-                                    ValueChanged="sldVolume_ValueChanged" />
-                            </StackPanel>
-                        </Flyout>
-                    </Button.Flyout>
-                </Button>
-            </StackPanel>
+
+                <StackPanel
+                    Grid.Column="1"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Button x:Name="btnRepetir" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnRepetir_Click">
+                        <FontIcon x:Name="fntRepetir" FontSize="16" Glyph="&#xE8EE;" />
+                    </Button>
+                    <Button x:Name="btnAnterior" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnAnterior_Click">
+                        <Button.KeyboardAccelerators>
+                            <KeyboardAccelerator Key="Left" Modifiers="Control" />
+                        </Button.KeyboardAccelerators>
+                        <FontIcon FontSize="16" Glyph="&#xE892;" />
+                    </Button>
+                    <Button x:Name="btnTocarPausar" VerticalAlignment="Center" Style="{StaticResource BotaoTocarStyle}" Click="btnTocarPausar_Click">
+                        <FontIcon x:Name="fntTocarPausar" FontSize="20" Glyph="&#xE768;" />
+                    </Button>
+                    <Button x:Name="btnProximo" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnProximo_Click">
+                        <Button.KeyboardAccelerators>
+                            <KeyboardAccelerator Key="Right" Modifiers="Control" />
+                        </Button.KeyboardAccelerators>
+                        <FontIcon FontSize="16" Glyph="&#xE893;" />
+                    </Button>
+                    <Button x:Name="btnVolume" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}">
+                        <FontIcon x:Name="fntVolume" FontSize="16" Glyph="&#xE767;" />
+                        <Button.Flyout>
+                            <Flyout Placement="Top">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button x:Name="btnMudo" VerticalAlignment="Center" Style="{StaticResource BotaoTransporteStyle}" Click="btnMudo_Click">
+                                        <FontIcon x:Name="fntMudo" FontSize="16" Glyph="&#xE74F;" />
+                                    </Button>
+                                    <Slider
+                                        x:Name="sldVolume"
+                                        Width="200"
+                                        VerticalAlignment="Center"
+                                        Maximum="100"
+                                        Minimum="0"
+                                        StepFrequency="1"
+                                        ValueChanged="sldVolume_ValueChanged" />
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

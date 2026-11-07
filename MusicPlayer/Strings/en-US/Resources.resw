@@ -217,4 +217,25 @@
   <data name="ErroSalvarMetadados" xml:space="preserve">
     <value>Could not save the info of &quot;{0}&quot;: {1}</value>
   </data>
+  <data name="Pesquisar" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="PesquisarCarregando" xml:space="preserve">
+    <value>Wait for the songs to load…</value>
+  </data>
+  <data name="CarregandoFila" xml:space="preserve">
+    <value>Loading {0} of {1}…</value>
+  </data>
+  <data name="ResumoFiltro" xml:space="preserve">
+    <value>{0} of {1} songs</value>
+  </data>
+  <data name="FiltroSemResultado" xml:space="preserve">
+    <value>No songs in the queue match the filter.</value>
+  </data>
+  <data name="MostrarNaFilaDica" xml:space="preserve">
+    <value>Show in queue</value>
+  </data>
+  <data name="MostrarNaFilaMusicaDica" xml:space="preserve">
+    <value>Show &quot;{0}&quot; in queue</value>
+  </data>
 </root>
