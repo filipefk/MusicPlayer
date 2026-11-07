@@ -181,9 +181,6 @@
   <data name="MostrarPainelDica" xml:space="preserve">
     <value>Mostrar o painel com a capa do álbum</value>
   </data>
-  <data name="SemMetadados" xml:space="preserve">
-    <value>Sem metadados</value>
-  </data>
   <data name="MenuEditarMetadados" xml:space="preserve">
     <value>Editar informações...</value>
   </data>

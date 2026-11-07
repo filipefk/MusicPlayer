@@ -214,8 +214,9 @@
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource CaptionTextBlockStyle}"
-                                            Text="{x:Bind local:JanelaPrincipal.TextoSubtitulo(Subtitulo), Mode=OneWay}"
-                                            TextTrimming="CharacterEllipsis" />
+                                            TextTrimming="CharacterEllipsis">
+                                            <Run Text="{x:Bind PrefixoSubtitulo, Mode=OneWay}" /><Run Foreground="{ThemeResource TextFillColorDisabledBrush}" Text="{x:Bind Caminho}" />
+                                        </TextBlock>
                                     </StackPanel>
                                     <TextBlock
                                         Grid.Column="2"

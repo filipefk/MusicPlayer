@@ -151,10 +151,6 @@ public sealed partial class JanelaPrincipal : Window
     private void AtualizarDicaPainelTocando() =>
         ToolTipService.SetToolTip(abbPainelTocando, Textos.Obter(_painelTocandoVisivel ? "OcultarPainelDica" : "MostrarPainelDica"));
 
-    // Segunda linha da fila: sem artista nem álbum, mostra um texto padrão para a linha não ficar vazia.
-    public static string TextoSubtitulo(string subtitulo) =>
-        string.IsNullOrEmpty(subtitulo) ? Textos.Obter("SemMetadados") : subtitulo;
-
     private void AlinharTextosTocando(HorizontalAlignment alinhamento, TextAlignment texto)
     {
         foreach (var bloco in new[] { txtTitulo, txtArtista, txtAlbum })

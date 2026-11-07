@@ -53,9 +53,6 @@ public sealed partial class JanelaPrincipal
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(sldPosicao, Textos.Obter("Posicao"));
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(sldVolume, Textos.Obter("Volume"));
         AtualizarResumoFila();
-        // O texto padrão da segunda linha ("Sem metadados") vem de Textos: relê no novo idioma.
-        foreach (var item in _fila.Itens)
-            item.AtualizarTextos();
 
         DefinirDica(btnAnterior, Textos.Obter("AnteriorDica"));
         DefinirDica(btnProximo, Textos.Obter("ProximoDica"));

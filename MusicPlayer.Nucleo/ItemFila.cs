@@ -21,11 +21,11 @@ public sealed partial class ItemFila : ObservableObject
     public partial string Titulo { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Subtitulo))]
+    [NotifyPropertyChangedFor(nameof(PrefixoSubtitulo))]
     public partial string Artista { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Subtitulo))]
+    [NotifyPropertyChangedFor(nameof(PrefixoSubtitulo))]
     public partial string Album { get; set; }
 
     [ObservableProperty]
@@ -38,13 +38,15 @@ public sealed partial class ItemFila : ObservableObject
 
     public bool MetadadosCarregados { get; private set; }
 
-    public string Subtitulo =>
-        string.IsNullOrEmpty(Artista) ? Album
-        : string.IsNullOrEmpty(Album) ? Artista
-        : $"{Artista} · {Album}";
-
-    // A interface troca o subtítulo vazio por um texto padrão no idioma atual; após trocar o idioma, relê.
-    public void AtualizarTextos() => OnPropertyChanged(nameof(Subtitulo));
+    // Início da segunda linha: artista e álbum (quando houver) já com o separador; o caminho vem depois, com outra cor.
+    public string PrefixoSubtitulo
+    {
+        get
+        {
+            var metadados = string.Join(" · ", ((string[])[Artista, Album]).Where(parte => !string.IsNullOrEmpty(parte)));
+            return metadados.Length == 0 ? string.Empty : $"{metadados} · ";
+        }
+    }
 
     public string DuracaoTexto => Duracao > TimeSpan.Zero ? FormatoTempo.Formatar(Duracao) : string.Empty;
 
